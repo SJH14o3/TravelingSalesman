@@ -12,6 +12,9 @@ public class frame{
         f=new JFrame("Traveling Salesman");
         f.setBounds(150,5,1300,800);
         f.setLayout(null);
+        f.setResizable(false);
+        //TODO create a program icon
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setVisible(true);
     }
     frame(){ //menu
@@ -39,8 +42,8 @@ public class frame{
         newgame.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                frame f2=new frame(1);
                 f.setVisible(false);
+                new Game((byte) 2);
             }
         });
     }
