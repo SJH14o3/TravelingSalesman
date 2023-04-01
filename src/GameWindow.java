@@ -18,6 +18,7 @@ public class GameWindow{
         gamewindow=new JFrame();
         setupFrame();
         Dice d=new Dice(gamewindow);
+        MovementButtons m=new MovementButtons(gamewindow);
         map.setBounds(316, 60, 654, 660);
         gamewindow.add(map);
         map.setVisible(true);
