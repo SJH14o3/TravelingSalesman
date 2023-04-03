@@ -17,6 +17,7 @@ public class GameWindow{
     GameWindow() {
         gameWindow=new JFrame();
         setupFrame();
+        ScoreBoard scorboard=new ScoreBoard();
         Dice d=new Dice(gameWindow);
         new QuestPanel(gameWindow);
         MovementButtons m=new MovementButtons(gameWindow);
