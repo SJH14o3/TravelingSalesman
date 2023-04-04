@@ -6,7 +6,7 @@ public class GameWindow{
     JLabel[] startImg = {new JLabel(new ImageIcon("images\\startLeft.png")), new JLabel(new ImageIcon("images\\startRight.png"))};
     JLabel background = new JLabel(new ImageIcon("images\\background.png"));
     private void setupFrame() {
-        gameWindow.setBounds(150,5,1300,800);
+        gameWindow.setBounds(230,5,1300,800);
         gameWindow.setLayout(null);
         gameWindow.setTitle("Traveling Salesman");
         gameWindow.setResizable(false);
