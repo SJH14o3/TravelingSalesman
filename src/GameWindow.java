@@ -3,6 +3,7 @@ import javax.swing.*;
 public class GameWindow{
     public JFrame gameWindow;
     Map map = new Map();
+    MovementButtons m;
     JLabel[] startImg = {new JLabel(new ImageIcon("images\\startLeft.png")), new JLabel(new ImageIcon("images\\startRight.png"))};
     JLabel background = new JLabel(new ImageIcon("images\\background.png"));
     private void setupFrame() {
@@ -15,12 +16,12 @@ public class GameWindow{
         gameWindow.setVisible(true);
     }
     GameWindow() {
+        ScoreBoard scorboard=new ScoreBoard();
         gameWindow=new JFrame();
         setupFrame();
-        ScoreBoard scorboard=new ScoreBoard();
-        Dice d=new Dice(gameWindow);
+        //new Dice(gameWindow);
         new QuestPanel(gameWindow);
-        MovementButtons m=new MovementButtons(gameWindow);
+        m=new MovementButtons(gameWindow);
         map.setBounds(316, 60, 654, 660);
         gameWindow.add(map);
         map.setVisible(true);

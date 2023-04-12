@@ -15,14 +15,17 @@ public class frame{
         newgame=new JButton("New game");
         newgame.setBounds(1130,420,130,75);
         newgame.setBackground(Color.blue);
+
         loadgame=new JButton("Load game");
         loadgame.setBounds(1130,500,130,75);
         loadgame.setBackground(Color.cyan);
+
         title=new JTextField("Traveling Salesman");
         title.setBounds(0,0,500,100);
         title.setEditable(false);
         title.setFont(new Font("Segoe Script",Font.BOLD,45));
         title.setBackground(Color.yellow);
+
         f.add(title);
         f.add(newgame);
         f.add(loadgame);
