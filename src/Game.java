@@ -9,7 +9,8 @@ public class Game {
     JLabel MovesLeft;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
-    Dice d=new Dice(f.gameWindow);
+    Dice d=new Dice(f.jl);
+    Walls walls = new Walls(f.jl);
     private byte questNum = 8;
     boolean CheckNotePlaces(String direction){
         if (direction=="Left") {
@@ -226,12 +227,12 @@ public class Game {
 
         MovesLeft=new JLabel();
         MovesLeft.setBounds(75,435,100,30);
-        MovesLeft.setText("Role the dice");
+        MovesLeft.setText("Roll the dice");
         MovesLeft.setFont(new Font("Comic Sans MS", Font.PLAIN,13));
         MovesLeft.setHorizontalAlignment(SwingConstants.CENTER);
         MovesLeft.setVisible(true);
         MovesLeft.setOpaque(true);
-        f.gameWindow.add(MovesLeft);
+        f.jl.add(MovesLeft, JLayeredPane.MODAL_LAYER);
 
         d.turn=1;
         System.out.println("player1(x,y): "+players[0].x+"  "+players[0].y);

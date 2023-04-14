@@ -40,17 +40,17 @@ public class QuestPanel {
                 break;
         }
     }
-    QuestPanel(JFrame gameWindow) {
+    QuestPanel(JLayeredPane jl) {
         changeQuestIcon((byte) 1);
         icon.setBounds(1055, 8, 220, 220);
-        gameWindow.add(icon);
+        jl.add(icon, JLayeredPane.POPUP_LAYER);
         setText((byte) 1);
         text.setBounds(1045, 228, 239, 35);
         text.setForeground(Color.WHITE);
         text.setHorizontalAlignment(SwingConstants.CENTER);
         text.setFont(new Font("Tahoma", Font.PLAIN,25));
-        gameWindow.add(text);
+        jl.add(text, JLayeredPane.POPUP_LAYER);
         bg.setBounds(1045, -5, 239, 270);
-        gameWindow.add(bg);
+        jl.add(bg, JLayeredPane.PALETTE_LAYER);
     }
 }

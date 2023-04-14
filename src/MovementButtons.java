@@ -6,7 +6,7 @@ public class MovementButtons {
     private ImageIcon left=new ImageIcon("images\\LeftButton.png");
     private ImageIcon up=new ImageIcon("images\\UpButton.png");
     private ImageIcon down=new ImageIcon("images\\DownButton.png");
-    MovementButtons(JFrame gamewindow){
+    MovementButtons(JLayeredPane jl){
         Right=new JButton(right);
         Down=new JButton(down);
         Left=new JButton(left);
@@ -17,10 +17,10 @@ public class MovementButtons {
         Down.setBounds(1088,681,60,60);
         Left.setBounds(1027,620,60,60);
 
-        gamewindow.add(Right);
-        gamewindow.add(Left);
-        gamewindow.add(Up);
-        gamewindow.add(Down);
+        jl.add(Right, JLayeredPane.POPUP_LAYER);
+        jl.add(Left, JLayeredPane.POPUP_LAYER);
+        jl.add(Up, JLayeredPane.POPUP_LAYER);
+        jl.add(Down, JLayeredPane.POPUP_LAYER);
     }
     MovementButtons(){
     }

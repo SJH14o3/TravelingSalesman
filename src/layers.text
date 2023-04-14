@@ -1,0 +1,21 @@
+{
+	"Default": {
+		Background
+	}
+	"Palette": {
+		Map
+	}
+	"Modal": {
+		Dice
+		Dice_MovesLeft
+		Quest_Panel_Background
+		Walls
+	}
+	"PopUp": {
+		Quest_Icon
+		Quest_Text
+		Movement_Button
+	}
+	"Drag": {
+	}
+}
