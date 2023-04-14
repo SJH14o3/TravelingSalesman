@@ -10,6 +10,7 @@ public class Game {
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
     Dice d=new Dice(f.jl);
+    Walls walls = new Walls(f.jl);
     private byte questNum = 8;
     boolean CheckNotePlaces(String direction){
         if (direction=="Left") {
