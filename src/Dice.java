@@ -8,12 +8,12 @@ public class Dice {
     public JButton dice;
     public String target;
 
-    Dice(JFrame gameWindow){
+    Dice(JLayeredPane jl){
 
         dice=new JButton();
         dice.setBounds(75,330,100,100);
         dice.setIcon(new ImageIcon("images\\FirstDice.png"));
-        gameWindow.add(dice);
+        jl.add(dice, JLayeredPane.MODAL_LAYER);
     }
 
 

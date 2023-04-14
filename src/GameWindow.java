@@ -2,6 +2,7 @@ import javax.swing.*;
 
 public class GameWindow{
     public JFrame gameWindow;
+    public JLayeredPane jl;
     Map map = new Map();
     MovementButtons m;
     JLabel[] startImg = {new JLabel(new ImageIcon("images\\startLeft.png")), new JLabel(new ImageIcon("images\\startRight.png"))};
@@ -18,21 +19,24 @@ public class GameWindow{
     GameWindow() {
         ScoreBoard scorboard=new ScoreBoard();
         gameWindow=new JFrame();
+        jl = new JLayeredPane();
+        jl.setBounds(0,0, 1300, 800);
+        gameWindow.add(jl);
         setupFrame();
         //new Dice(gameWindow);
-        new QuestPanel(gameWindow);
-        m=new MovementButtons(gameWindow);
+        new QuestPanel(jl);
+        m=new MovementButtons(jl);
         map.setBounds(316, 60, 654, 660);
-        gameWindow.add(map);
+        jl.add(map, JLayeredPane.PALETTE_LAYER);
         map.setVisible(true);
         startImg[0].setBounds(966, 64, 61, 70);
         startImg[0].setVisible(true);
         startImg[1].setBounds(255, 649, 61, 70);
         startImg[1].setVisible(true);
-        gameWindow.add(startImg[0]);
-        gameWindow.add(startImg[1]);
+        jl.add(startImg[0], JLayeredPane.PALETTE_LAYER);
+        jl.add(startImg[1], JLayeredPane.PALETTE_LAYER);
         background.setBounds(0,0, 1300, 810);
-        gameWindow.add(background);
+        jl.add(background, JLayeredPane.DEFAULT_LAYER);
         //while(true)System.out.println(gameWindow.getMousePosition());
     }
 }
