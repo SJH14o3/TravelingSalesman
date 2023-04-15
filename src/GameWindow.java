@@ -1,7 +1,9 @@
 import javax.swing.*;
+import java.awt.*;
 
 public class GameWindow{
     public JFrame gameWindow;
+    public JLabel error;
     public JLayeredPane jl;
     Map map = new Map();
     MovementButtons m;
@@ -19,6 +21,13 @@ public class GameWindow{
     GameWindow() {
         //ScoreBoard scorboard=new ScoreBoard();
         gameWindow=new JFrame();
+        error=new JLabel("Go");
+        error.setBounds(50,600,160,110);
+        error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+        error.setHorizontalAlignment(SwingConstants.CENTER);
+        error.setBackground(Color.green);
+        error.setVisible(true);
+        error.setOpaque(true);
         jl = new JLayeredPane();
         jl.setBounds(0,0, 1300, 800);
         gameWindow.add(jl);
@@ -37,6 +46,7 @@ public class GameWindow{
         jl.add(startImg[1], JLayeredPane.PALETTE_LAYER);
         background.setBounds(0,0, 1300, 810);
         jl.add(background, JLayeredPane.DEFAULT_LAYER);
+        jl.add(error,JLayeredPane.MODAL_LAYER);
         //while(true)System.out.println(gameWindow.getMousePosition());
     }
 }

@@ -16,22 +16,42 @@ public class Game {
     boolean CheckNotePlaces(String direction){
         if (direction=="Left") {
             for (int x = 0; x<NotePlaces.length ; x++) {
-                if (NotePlaces[x][0] == (players[d.turn-1].x) && NotePlaces[x][1] == (players[d.turn-1].y - 1) ) return true;
+                if (NotePlaces[x][0] == (players[d.turn-1].x) && NotePlaces[x][1] == (players[d.turn-1].y - 1)){
+                    f.error.setBackground(Color.yellow);
+                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
+                    f.error.setText("Crossed place!");
+                    return true;
+                }
             }
             return false;
         } else if (direction=="Right") {
             for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x) && NotePlaces[x][1] == (players[d.turn-1].y + 1)) return true;
+                if (NotePlaces[x][0] == (players[d.turn-1].x) && NotePlaces[x][1] == (players[d.turn-1].y + 1)) {
+                    f.error.setBackground(Color.yellow);
+                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
+                    f.error.setText("Crossed place!");
+                    return true;
+                }
             }
             return false;
         } else if (direction=="Up") {
             for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x - 1) && NotePlaces[x][1] == (players[d.turn-1].y)) return true;
+                if (NotePlaces[x][0] == (players[d.turn-1].x - 1) && NotePlaces[x][1] == (players[d.turn-1].y)) {
+                    f.error.setBackground(Color.yellow);
+                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
+                    f.error.setText("Crossed place!");
+                    return true;
+                }
             }
             return false;
         } else if (direction=="Down") {
             for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x + 1) && NotePlaces[x][1] == (players[d.turn-1].y)) return true;
+                if (NotePlaces[x][0] == (players[d.turn-1].x + 1) && NotePlaces[x][1] == (players[d.turn-1].y)) {
+                    f.error.setBackground(Color.yellow);
+                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
+                    f.error.setText("Crossed place!");
+                    return true;
+                }
             }
             return false;
         }
@@ -69,7 +89,20 @@ public class Game {
                 //TODO make error messages
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    if(!walls.checkWallLeft(players, d.turn)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+                        f.error.setText("Hit a wall!");
+                    }
+                    else if (players[d.turn-1].y == 0) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+                        f.error.setText("Out of map!");
+                    }
                     if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
+                        f.error.setBackground(Color.green);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+                        f.error.setText("Go");
                         players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y+1;
@@ -96,7 +129,20 @@ public class Game {
             f.m.Right.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
+                    if (!walls.checkWallRight(players, d.turn)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+                        f.error.setText("Hit a wall!");
+                    }
+                    else if (players[d.turn-1].y == 9) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+                        f.error.setText("Out of map!");
+                    }
+                    else if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
+                        f.error.setBackground(Color.green);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+                        f.error.setText("Go");
                         players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y-1;
@@ -123,7 +169,20 @@ public class Game {
             f.m.Up.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    if(!walls.checkWallRight(players, d.turn)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+                        f.error.setText("Hit a wall!");
+                    }
+                    else if (players[d.turn-1].x == 0) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+                        f.error.setText("Out of map!");
+                    }
                     if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
+                        f.error.setBackground(Color.green);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+                        f.error.setText("Go");
                         players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
                         NotePlaces[i][0]=players[d.turn-1].x+1;
                         NotePlaces[i][1]=players[d.turn-1].y;
@@ -150,7 +209,20 @@ public class Game {
             f.m.Down.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    if (!walls.checkWallRight(players, d.turn)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+                        f.error.setText("Hit a wall!");
+                    }
+                    else if (players[d.turn-1].x == 9) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+                        f.error.setText("Out of map!");
+                    }
                     if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
+                        f.error.setBackground(Color.green);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+                        f.error.setText("Go");
                         players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
                         NotePlaces[i][0]=players[d.turn-1].x-1;
                         NotePlaces[i][1]=players[d.turn-1].y;
