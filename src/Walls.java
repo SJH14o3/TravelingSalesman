@@ -20,7 +20,7 @@ public class Walls {
         int[][] houses = new int[10][10];
         int x, y;
         Random rng = new Random();
-        for (int i = 0; i < 15;) {
+        for (int i = 0; i < 10;) {
             x = rng.nextInt(10);
             y = rng.nextInt(8) + 1;
             if (houses[x][y+1] == 0 && houses[x][y] == 0) {
@@ -32,7 +32,7 @@ public class Walls {
             }
             //else System.out.println("placing H wall was canceled : " + x + " " + y);
         }
-        for (int i = 0; i < 15;) {
+        for (int i = 0; i < 10;) {
             y = rng.nextInt(10);
             x = rng.nextInt(8) + 1;
             if (houses[x+1][y] == 0 && houses[x][y] == 0) {

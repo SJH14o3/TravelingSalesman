@@ -17,7 +17,7 @@ public class GameWindow{
         gameWindow.setVisible(true);
     }
     GameWindow() {
-        ScoreBoard scorboard=new ScoreBoard();
+        //ScoreBoard scorboard=new ScoreBoard();
         gameWindow=new JFrame();
         jl = new JLayeredPane();
         jl.setBounds(0,0, 1300, 800);
