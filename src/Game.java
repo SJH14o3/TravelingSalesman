@@ -7,6 +7,7 @@ public class Game {
     int i=0;
     Player[] players;
     JLabel MovesLeft;
+    JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
     Dice d=new Dice(f.jl);
@@ -47,6 +48,10 @@ public class Game {
         System.out.println("i = " + i + "\n");
         i = 0;
     }
+    private void updateIcon(int i) {
+        icons[i].setBounds(319 + players[i].y*(65), 67 + players[i].x*(65) , 65, 65);
+        icons[i].repaint();
+    }
     public void MovementActions(){
         i=0;
             f.m.Left.addActionListener(new ActionListener() {
@@ -62,6 +67,7 @@ public class Game {
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                         System.out.println("DiceNumber: "+d.DiceNumber);
                         MovesLeft.setText("Moves Left: "+d.DiceNumber);
+                        updateIcon(d.turn-1);
                         if (d.DiceNumber==0){
                             d.dice.setEnabled(true);
                             d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
@@ -87,6 +93,7 @@ public class Game {
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                         System.out.println("DiceNumber: "+d.DiceNumber);
                         MovesLeft.setText("Moves Left: "+d.DiceNumber);
+                        updateIcon(d.turn-1);
                         if (d.DiceNumber==0){
                             d.dice.setEnabled(true);
                             d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
@@ -112,6 +119,7 @@ public class Game {
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                         System.out.println("DiceNumber: "+d.DiceNumber);
                         MovesLeft.setText("Moves Left: "+d.DiceNumber);
+                        updateIcon(d.turn-1);
                         if (d.DiceNumber==0){
                             d.dice.setEnabled(true);
                             d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
@@ -137,6 +145,7 @@ public class Game {
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                         System.out.println("DiceNumber: "+d.DiceNumber);
                         MovesLeft.setText("Moves Left: "+d.DiceNumber);
+                        updateIcon(d.turn-1);
                         if (d.DiceNumber==0){
                             d.dice.setEnabled(true);
                             d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
@@ -157,11 +166,11 @@ public class Game {
         for (byte i = 0; i < players.length; i++) {
             players[i] = new Player();
             if (i==0 || i==2){
-                players[i].x=-1;
-                players[i].y=9;
+                players[i].x=9;
+                players[i].y=-1;
             } else if (i==1 || i==3) {
-                players[i].x=10;
-                players[i].y=0;
+                players[i].x=0;
+                players[i].y=10;
             }
             System.out.println(players[i].getName());
         }
@@ -177,11 +186,11 @@ public class Game {
                 d.dice.setIcon(new ImageIcon(d.target));
                 d.dice.setEnabled(false);
                 MovesLeft.setText("Moves Left: " + d.DiceNumber);
-                /*for (int k = 0; k < NotePlaces.length; k++) {
+                for (int k = 0; k < NotePlaces.length; k++) {
                     for (int z = 0; z < NotePlaces[k].length; z++) {
                         NotePlaces[k][z] = -2;
                     }
-                }*/
+                }
             }
         });
         MovementActions();
@@ -194,7 +203,6 @@ public class Game {
     }
     Game(byte playersCount) {
         setupPlayers(playersCount);
-
         MovesLeft=new JLabel();
         MovesLeft.setBounds(75,435,100,30);
         MovesLeft.setText("Roll the dice");
@@ -203,6 +211,10 @@ public class Game {
         MovesLeft.setVisible(true);
         MovesLeft.setOpaque(true);
         f.jl.add(MovesLeft, JLayeredPane.MODAL_LAYER);
+        updateIcon(0);
+        updateIcon(1);
+        f.jl.add(icons[0], JLayeredPane.POPUP_LAYER);
+        f.jl.add(icons[1], JLayeredPane.POPUP_LAYER);
         GameLoop();
     }
 }
