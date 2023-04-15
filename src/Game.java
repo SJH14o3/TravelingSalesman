@@ -4,10 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Game {
-    int i=1;
+    int i=0;
     Player[] players;
     JLabel MovesLeft;
-    int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
+    int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
@@ -57,7 +57,7 @@ public class Game {
         i = 0;
     }
     public void MovementActions(byte playersCount){
-        i=1;
+        i=0;
             f.m.Left.addActionListener(new ActionListener() {
                 //TODO make error messages
                 @Override
@@ -65,7 +65,7 @@ public class Game {
                     if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
                         players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
-                        NotePlaces[i][1]=players[d.turn-1].y;
+                        NotePlaces[i][1]=players[d.turn-1].y+1;
                         i++;
                         d.DiceNumber--;
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
@@ -91,7 +91,7 @@ public class Game {
                     if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
                         players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
-                        NotePlaces[i][1]=players[d.turn-1].y;
+                        NotePlaces[i][1]=players[d.turn-1].y-1;
                         i++;
                         d.DiceNumber--;
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
@@ -116,7 +116,7 @@ public class Game {
                 public void actionPerformed(ActionEvent e) {
                     if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
                         players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
-                        NotePlaces[i][0]=players[d.turn-1].x;
+                        NotePlaces[i][0]=players[d.turn-1].x+1;
                         NotePlaces[i][1]=players[d.turn-1].y;
                         i++;
                         d.DiceNumber--;
@@ -142,7 +142,7 @@ public class Game {
                 public void actionPerformed(ActionEvent e) {
                     if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
                         players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
-                        NotePlaces[i][0]=players[d.turn-1].x;
+                        NotePlaces[i][0]=players[d.turn-1].x-1;
                         NotePlaces[i][1]=players[d.turn-1].y;
                         i++;
                         d.DiceNumber--;
@@ -204,14 +204,12 @@ public class Game {
                 d.dice.setIcon(new ImageIcon(d.target));
                 d.dice.setEnabled(false);
                 MovesLeft.setText("Moves Left: " + d.DiceNumber);
-                NotePlaces[0][0]=NotePlaces[i-1][0];
-                NotePlaces[0][1]=NotePlaces[i-1][1];
-                for (int k = 1 ; k < NotePlaces.length ; k++) {
+                for (int k = 0 ; k < NotePlaces.length ; k++) {
                     for (int z = 0; z < NotePlaces[k].length; z++) {
                         NotePlaces[k][z] = -2;
                     }
                 }
-                i=1;
+                i=0;
             }
         });
         MovementActions(playersCount);
