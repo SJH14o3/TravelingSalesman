@@ -15,6 +15,7 @@
 		Quest_Icon
 		Quest_Text
 		Movement_Button
+		Player_Icons
 	}
 	"Drag": {
 	}
