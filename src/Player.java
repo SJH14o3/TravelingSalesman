@@ -3,8 +3,8 @@ public class Player {
     private String name;
     public byte x;
     public byte y;
-    private short money;
-    private short strength;
+    public short money;
+    public short power;
     //for faze one setName will be like this.
     private void setName() {
         name = "Player " + count;
