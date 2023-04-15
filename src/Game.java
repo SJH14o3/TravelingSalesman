@@ -44,8 +44,7 @@ public class Game {
         else {
             d.turn--;
         }
-        System.out.println("turn for " + d.turn);
-        System.out.println("i = " + i + "\n");
+        System.out.println("turn for " + d.turn + "\n");
         i = 0;
     }
     private void updateIcon(int i) {
@@ -58,7 +57,7 @@ public class Game {
                 //TODO make error messages
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false) {
+                    if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
                         players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y;
@@ -84,7 +83,7 @@ public class Game {
             f.m.Right.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false) {
+                    if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
                         players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
                         NotePlaces[i][0]=players[0].x;
                         NotePlaces[i][1]=players[0].y;
@@ -110,7 +109,7 @@ public class Game {
             f.m.Up.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false) {
+                    if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
                         players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y;
@@ -136,7 +135,7 @@ public class Game {
             f.m.Down.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].x < 9 && d.DiceNumber>0 && CheckNotePlaces("Down")==false) {
+                    if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
                         players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y;

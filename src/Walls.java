@@ -16,6 +16,40 @@ public class Walls {
         label.setBounds(380 + 65*x, 69 + 65*y, 5, 61);
         jl.add(label, JLayeredPane.MODAL_LAYER);
     }
+    boolean checkWallUp(Player[] players, int turn) {
+        if(walls[0][players[turn-1].y][players[turn-1].x-1] == 1) {
+            System.out.println("hit a wall");
+            return false;
+        }
+        return true;
+    }
+    boolean checkWallDown(Player[] players, int turn) {
+        if(walls[0][players[turn-1].y][players[turn-1].x] == 1) {
+            System.out.println("hit a wall");
+            return false;
+        }
+        return true;
+    }
+    boolean checkWallRight(Player[] players, int turn) {
+        if (players[turn-1].y == -1) {
+            return true;
+        }
+        if(walls[1][players[turn-1].y][players[turn-1].x] == 1) {
+            System.out.println("hit a wall");
+            return false;
+        }
+        return true;
+    }
+    boolean checkWallLeft(Player[] players, int turn) {
+        if (players[turn-1].y == 10) {
+            return true;
+        }
+        if(walls[1][players[turn-1].y-1][players[turn-1].x] == 1) {
+            System.out.println("hit a wall");
+            return false;
+        }
+        return true;
+    }
     Walls(JLayeredPane jl) {
         int[][] houses = new int[10][10];
         int x, y;
