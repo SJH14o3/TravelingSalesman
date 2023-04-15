@@ -52,12 +52,14 @@ public class Game {
         icons[i].repaint();
     }
     private void turnFinished() {
+        icons[d.turn-1].setVisible(false);
         if (d.turn == 1) {
             d.turn++;
         }
         else {
             d.turn--;
         }
+        icons[d.turn-1].setVisible(true);
         System.out.println("turn for " + d.turn + "\n");
         i = 0;
     }
@@ -242,6 +244,7 @@ public class Game {
         f.jl.add(MovesLeft, JLayeredPane.MODAL_LAYER);
         updateIcon(0);
         updateIcon(1);
+        icons[0].setVisible(false);
         f.jl.add(icons[0], JLayeredPane.POPUP_LAYER);
         f.jl.add(icons[1], JLayeredPane.POPUP_LAYER);
         GameLoop(playersCount);
