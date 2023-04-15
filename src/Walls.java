@@ -53,30 +53,31 @@ public class Walls {
     Walls(JLayeredPane jl) {
         int[][] houses = new int[10][10];
         int x, y;
+        boolean check;
         Random rng = new Random();
-        for (int i = 0; i < 10;) {
-            x = rng.nextInt(10);
-            y = rng.nextInt(8) + 1;
-            if (houses[x][y+1] == 0 && houses[x][y] == 0) {
-                houses[x][y+1] = houses[x][y] = 1;
-                placeWall(0, x, y);
-                drawHWall(jl, x, y);
-                //System.out.println("Horizontal Wall at " + x + " " + y);
-                i++;
+        for (int i = 0; i < 10; i++) {
+            check = true;
+            while (check) {
+                x = rng.nextInt(10);
+                y = rng.nextInt(8) + 1;
+                if (houses[x][y + 1] == 0 && houses[x][y] == 0) {
+                    houses[x][y + 1] = houses[x][y] = 1;
+                    placeWall(0, x, y);
+                    drawHWall(jl, x, y);
+                    check = false;
+                }
             }
-            //else System.out.println("placing H wall was canceled : " + x + " " + y);
-        }
-        for (int i = 0; i < 10;) {
-            y = rng.nextInt(10);
-            x = rng.nextInt(8) + 1;
-            if (houses[x+1][y] == 0 && houses[x][y] == 0) {
-                houses[x+1][y] = houses[x-1][y] = 1;
-                placeWall(1, x, y);
-                drawVWall(jl, x, y);
-                //System.out.println("Vertical Wall at " + x + " " + y);
-                i++;
+            check = true;
+            while (check) {
+                y = rng.nextInt(10);
+                x = rng.nextInt(8) + 1;
+                if (houses[x + 1][y] == 0 && houses[x][y] == 0) {
+                    houses[x + 1][y] = houses[x][y] = 1;
+                    placeWall(1, x, y);
+                    drawVWall(jl, x, y);
+                    check = false;
+                }
             }
-            //else System.out.println("placing V wall was canceled : " + x + " " + y);
         }
     }
 }

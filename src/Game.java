@@ -9,6 +9,7 @@ public class Game {
     JLabel MovesLeft;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
+    JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
     private byte questNum = 8;
@@ -46,6 +47,10 @@ public class Game {
             }
         }
     }
+    private void updateIcon(int i) {
+        icons[i].setBounds(319 + players[i].y*(65), 67 + players[i].x*(65) , 65, 65);
+        icons[i].repaint();
+    }
     private void turnFinished() {
         if (d.turn == 1) {
             d.turn++;
@@ -71,6 +76,7 @@ public class Game {
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                         System.out.println("DiceNumber: "+d.DiceNumber);
                         MovesLeft.setText("Moves Left: "+d.DiceNumber);
+                        updateIcon(d.turn-1);
                         if (d.DiceNumber==0){
                             FightTester(playersCount);
                             d.dice.setEnabled(true);
@@ -97,6 +103,7 @@ public class Game {
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                         System.out.println("DiceNumber: "+d.DiceNumber);
                         MovesLeft.setText("Moves Left: "+d.DiceNumber);
+                        updateIcon(d.turn-1);
                         if (d.DiceNumber==0){
                             FightTester(playersCount);
                             d.dice.setEnabled(true);
@@ -123,6 +130,7 @@ public class Game {
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                         System.out.println("DiceNumber: "+d.DiceNumber);
                         MovesLeft.setText("Moves Left: "+d.DiceNumber);
+                        updateIcon(d.turn-1);
                         if (d.DiceNumber==0){
                             FightTester(playersCount);
                             d.dice.setEnabled(true);
@@ -149,6 +157,7 @@ public class Game {
                         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                         System.out.println("DiceNumber: "+d.DiceNumber);
                         MovesLeft.setText("Moves Left: "+d.DiceNumber);
+                        updateIcon(d.turn-1);
                         if (d.DiceNumber==0){
                             FightTester(playersCount);
                             d.dice.setEnabled(true);
@@ -194,7 +203,7 @@ public class Game {
         }
     }
     private void GameLoop(byte playersCount) {
-        d.turn = 1;
+        d.turn = 2;
         System.out.println("player1(x,y): " + players[d.turn-1].x + "  " + players[d.turn-1].y);
         d.dice.addActionListener(new ActionListener() {
             @Override
@@ -231,6 +240,10 @@ public class Game {
         MovesLeft.setVisible(true);
         MovesLeft.setOpaque(true);
         f.jl.add(MovesLeft, JLayeredPane.MODAL_LAYER);
+        updateIcon(0);
+        updateIcon(1);
+        f.jl.add(icons[0], JLayeredPane.POPUP_LAYER);
+        f.jl.add(icons[1], JLayeredPane.POPUP_LAYER);
         GameLoop(playersCount);
     }
 }
