@@ -102,7 +102,7 @@ public class Game {
                     if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
                         f.error.setBackground(Color.green);
                         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                        f.error.setText("Go");
+                        f.error.setText("Go!");
                         players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y+1;
@@ -115,7 +115,7 @@ public class Game {
                         if (d.DiceNumber==0){
                             f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
                             f.error.setBackground(Color.red);
-                            f.error.setText("Chang the turn");
+                            f.error.setText("Change the turn");
                             changeTurn.setEnabled(true);
                             changeTurn.setVisible(true);
                         }
@@ -140,7 +140,7 @@ public class Game {
                     if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
                         f.error.setBackground(Color.green);
                         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                        f.error.setText("Go");
+                        f.error.setText("Go!");
                         players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y-1;
@@ -178,7 +178,7 @@ public class Game {
                     if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
                         f.error.setBackground(Color.green);
                         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                        f.error.setText("Go");
+                        f.error.setText("Go!");
                         players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
                         NotePlaces[i][0]=players[d.turn-1].x+1;
                         NotePlaces[i][1]=players[d.turn-1].y;
@@ -216,7 +216,7 @@ public class Game {
                     if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
                         f.error.setBackground(Color.green);
                         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                        f.error.setText("Go");
+                        f.error.setText("Go!");
                         players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
                         NotePlaces[i][0]=players[d.turn-1].x-1;
                         NotePlaces[i][1]=players[d.turn-1].y;
@@ -270,7 +270,7 @@ public class Game {
         }
     }
     private void GameLoop(byte playersCount) {
-        d.turn = 2;
+        d.turn = 1;
         f.playerTurn.setText("Turn: "+d.turn);
         System.out.println("player1(x,y): " + players[d.turn-1].x + "  " + players[d.turn-1].y);
         d.dice.addActionListener(new ActionListener() {
@@ -278,7 +278,7 @@ public class Game {
             public void actionPerformed(ActionEvent e) {
                 f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
                 f.error.setBackground(Color.GREEN);
-                f.error.setText("Go");
+                f.error.setText("Go!");
                 d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
                 d.setTarget(d.DiceNumber);
                 d.dice.setIcon(new ImageIcon(d.target));
@@ -341,7 +341,7 @@ public class Game {
         f.jl.add(MovesLeft, JLayeredPane.MODAL_LAYER);
         updateIcon(0);
         updateIcon(1);
-        icons[0].setVisible(false);
+        icons[1].setVisible(false);
         f.jl.add(icons[0], JLayeredPane.POPUP_LAYER);
         f.jl.add(icons[1], JLayeredPane.POPUP_LAYER);
         f.jl.add(changeTurn,JLayeredPane.MODAL_LAYER);
