@@ -10,6 +10,7 @@
 		Dice_MovesLeft
 		Quest_Panel_Background
 		Walls
+		JLabel error
 	}
 	"PopUp": {
 		Quest_Icon

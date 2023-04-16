@@ -3,7 +3,7 @@ import java.awt.*;
 
 public class GameWindow{
     public JFrame gameWindow;
-    public JLabel error;
+    public JLabel error,playerTurn;
     public JLayeredPane jl;
     Map map = new Map();
     MovementButtons m;
@@ -21,13 +21,23 @@ public class GameWindow{
     GameWindow() {
         //ScoreBoard scorboard=new ScoreBoard();
         gameWindow=new JFrame();
-        error=new JLabel("Go");
-        error.setBounds(50,600,160,110);
-        error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+        error=new JLabel("Roll the dice");
+        playerTurn=new JLabel();
+
+        error.setBounds(50,655,160,55);
+        error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
         error.setHorizontalAlignment(SwingConstants.CENTER);
-        error.setBackground(Color.green);
+        error.setBackground(Color.orange);
         error.setVisible(true);
         error.setOpaque(true);
+
+        playerTurn.setBounds(50,600,160,55);
+        playerTurn.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+        playerTurn.setHorizontalAlignment(SwingConstants.CENTER);
+        playerTurn.setBackground(Color.black);
+        playerTurn.setVisible(true);
+        playerTurn.setOpaque(true);
+
         jl = new JLayeredPane();
         jl.setBounds(0,0, 1300, 800);
         gameWindow.add(jl);
@@ -47,6 +57,7 @@ public class GameWindow{
         background.setBounds(0,0, 1300, 810);
         jl.add(background, JLayeredPane.DEFAULT_LAYER);
         jl.add(error,JLayeredPane.MODAL_LAYER);
+        jl.add(playerTurn,JLayeredPane.MODAL_LAYER);
         //while(true)System.out.println(gameWindow.getMousePosition());
     }
 }

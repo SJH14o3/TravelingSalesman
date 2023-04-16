@@ -24,59 +24,5 @@ public class MovementButtons {
     }
     MovementButtons(){
     }
-//    public void MovementActions(){
-//        Left.addActionListener(new ActionListener(){
-//            @Override
-//            public void actionPerformed(ActionEvent e){
-//                if (turn==1 && players[0].x>0){
-//                    players[0].x= (byte) (players[0].x-1);
-//                    DiceNumber--;
-//                }
-//                else if (turn==2 && players[1].x>0){
-//                    players[1].x=(byte) (players[1].x-1);
-//                    DiceNumber--;
-//                }
-//            }
-//        });
-//        Right.addActionListener(new ActionListener(){
-//            @Override
-//            public void actionPerformed(ActionEvent e){
-//                if (turn==1 && players[0].x<9){
-//                    players[0].x= (byte) (players[0].x+1);
-//                    DiceNumber--;
-//                }
-//                else if (turn==2 && players[1].x<9){
-//                    players[1].x=(byte) (players[1].x+1);
-//                    DiceNumber--;
-//                }
-//            }
-//        });
-//        Up.addActionListener(new ActionListener(){
-//            @Override
-//            public void actionPerformed(ActionEvent e){
-//                if (turn==1 && players[0].y<9){
-//                    players[0].y= (byte) (players[0].y+1);
-//                    DiceNumber--;
-//                }
-//                else if (turn==2 && players[1].y<9){
-//                    players[1].y=(byte) (players[1].y+1);
-//                    DiceNumber--;
-//                }
-//            }
-//        });
-//        Down.addActionListener(new ActionListener(){
-//            @Override
-//            public void actionPerformed(ActionEvent e){
-//                if (turn==1 && players[0].y>0){
-//                    players[0].y= (byte) (players[0].y-1);
-//                    DiceNumber--;
-//                }
-//                else if (turn==2 && players[1].y>0){
-//                    players[1].y=(byte) (players[1].y-1);
-//                    DiceNumber--;
-//                }
-//            }
-//        });
-//    }
 
 }
