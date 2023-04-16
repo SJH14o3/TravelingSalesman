@@ -271,7 +271,7 @@ public class Game {
     }
     private void GameLoop(byte playersCount) {
         d.turn = 2;
-        f.playerTurn.setText("Turn: 1");
+        f.playerTurn.setText("Turn: "+d.turn);
         System.out.println("player1(x,y): " + players[d.turn-1].x + "  " + players[d.turn-1].y);
         d.dice.addActionListener(new ActionListener() {
             @Override
