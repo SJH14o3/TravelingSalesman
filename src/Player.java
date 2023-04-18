@@ -5,6 +5,7 @@ public class Player {
     public byte y;
     public short money;
     public short power;
+    public boolean[][] places = new boolean[10][10];
     //for faze one setName will be like this.
     private void setName() {
         name = "Player " + count;

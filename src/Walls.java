@@ -9,12 +9,12 @@ public class Walls {
     private void drawHWall(JLayeredPane jl, int x, int y) {
         JLabel label = new JLabel(new ImageIcon("images\\HWall.png"));
         label.setBounds(320 + 65*x, 129 + 65*y, 61, 5);
-        jl.add(label, JLayeredPane.MODAL_LAYER);
+        jl.add(label, JLayeredPane.POPUP_LAYER);
     }
     private void drawVWall(JLayeredPane jl, int x, int y) {
         JLabel label = new JLabel(new ImageIcon("images\\VWall.png"));
         label.setBounds(380 + 65*x, 69 + 65*y, 5, 61);
-        jl.add(label, JLayeredPane.MODAL_LAYER);
+        jl.add(label, JLayeredPane.POPUP_LAYER);
     }
     boolean checkWallUp(Player[] players, int turn) {
         if(walls[0][players[turn-1].y][players[turn-1].x-1] == 1) {
