@@ -285,7 +285,7 @@ public class Game {
                 MovesLeft.setText("Roll the dice");
                 turnFinished();
                 f.hideCheckMarks();
-                f.showCheckMarks(players[d.turn-1]);
+                //f.showCheckMarks();
                 changeTurn.setEnabled(false);
                 changeTurn.setVisible(false);
             }
