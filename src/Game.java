@@ -68,9 +68,34 @@ public class Game {
             }
         }
     }
+    private void move() {
+        f.error.setBackground(Color.green);
+        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+        f.error.setText("Go!");
+        i++;
+        d.DiceNumber--;
+        System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
+        System.out.println("DiceNumber: "+d.DiceNumber);
+        MovesLeft.setText("Moves Left: "+d.DiceNumber);
+        updateIcon(d.turn-1);
+        players[d.turn-1].places[players[d.turn-1].y][players[d.turn-1].x] = true;
+        if (d.DiceNumber==0){
+            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+            f.error.setBackground(Color.red);
+            f.error.setText("Change the turn!");
+            changeTurn.setEnabled(true);
+            changeTurn.setVisible(true);
+        }
+    }
     private void updateIcon(int i) {
         icons[i].setBounds(319 + players[i].y*(65), 67 + players[i].x*(65) , 65, 65);
         icons[i].repaint();
+    }
+    private void correspondStats() {
+        f.showName.setText(players[d.turn-1].getName() + "'s turn");
+        f.coinsCount.setText(String.valueOf(players[d.turn-1].money));
+        f.strengthCount.setText(String.valueOf(players[d.turn-1].power));
+        f.playerTurn.setText("Turn: "+ (d.turn));
     }
     private void turnFinished() {
         icons[d.turn-1].setVisible(false);
@@ -82,7 +107,18 @@ public class Game {
         }
         icons[d.turn-1].setVisible(true);
         System.out.println("turn for " + d.turn + "\n");
+        correspondStats();
         i = 0;
+    }
+    private void outOfMapError() {
+        f.error.setBackground(Color.yellow);
+        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+        f.error.setText("Out of map!");
+    }
+    private void hitWallError() {
+        f.error.setBackground(Color.yellow);
+        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+        f.error.setText("Hit a wall!");
     }
     public void MovementActions(byte playersCount){
         i=0;
@@ -91,34 +127,15 @@ public class Game {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
-                        f.error.setBackground(Color.yellow);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                        f.error.setText("Out of map!");
+                            outOfMapError();
                     } else if(!walls.checkWallLeft(players, d.turn) && d.DiceNumber>0) {
-                        f.error.setBackground(Color.yellow);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                        f.error.setText("Hit a wall!");
+                        hitWallError();
                     }
                     if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
-                        f.error.setBackground(Color.green);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                        f.error.setText("Go");
                         players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y+1;
-                        i++;
-                        d.DiceNumber--;
-                        System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
-                        System.out.println("DiceNumber: "+d.DiceNumber);
-                        MovesLeft.setText("Moves Left: "+d.DiceNumber);
-                        updateIcon(d.turn-1);
-                        if (d.DiceNumber==0){
-                            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                            f.error.setBackground(Color.red);
-                            f.error.setText("Chang the turn");
-                            changeTurn.setEnabled(true);
-                            changeTurn.setVisible(true);
-                        }
+                        move();
                     }
                     else {
                         System.out.println("failed");
@@ -129,34 +146,15 @@ public class Game {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (players[d.turn-1].y == 9 && d.DiceNumber>0) {
-                        f.error.setBackground(Color.yellow);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                        f.error.setText("Out of map!");
+                        outOfMapError();
                     } else if (!walls.checkWallRight(players, d.turn) && d.DiceNumber>0) {
-                        f.error.setBackground(Color.yellow);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                        f.error.setText("Hit a wall!");
+                        hitWallError();
                     }
                     if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
-                        f.error.setBackground(Color.green);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                        f.error.setText("Go");
                         players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y-1;
-                        i++;
-                        d.DiceNumber--;
-                        System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
-                        System.out.println("DiceNumber: "+d.DiceNumber);
-                        MovesLeft.setText("Moves Left: "+d.DiceNumber);
-                        updateIcon(d.turn-1);
-                        if (d.DiceNumber==0){
-                            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                            f.error.setBackground(Color.red);
-                            f.error.setText("Chang the turn");
-                            changeTurn.setEnabled(true);
-                            changeTurn.setVisible(true);
-                        }
+                        move();
                     }
                     else {
                         System.out.println("failed");
@@ -167,34 +165,15 @@ public class Game {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (players[d.turn-1].x == 0 && d.DiceNumber>0) {
-                        f.error.setBackground(Color.yellow);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                        f.error.setText("Out of map!");
+                        outOfMapError();
                     } else if(!walls.checkWallUp(players, d.turn) && d.DiceNumber>0) {
-                        f.error.setBackground(Color.yellow);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                        f.error.setText("Hit a wall!");
+                        hitWallError();
                     }
                     if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
-                        f.error.setBackground(Color.green);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                        f.error.setText("Go");
                         players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
                         NotePlaces[i][0]=players[d.turn-1].x+1;
                         NotePlaces[i][1]=players[d.turn-1].y;
-                        i++;
-                        d.DiceNumber--;
-                        System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
-                        System.out.println("DiceNumber: "+d.DiceNumber);
-                        MovesLeft.setText("Moves Left: "+d.DiceNumber);
-                        updateIcon(d.turn-1);
-                        if (d.DiceNumber==0){
-                            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                            f.error.setBackground(Color.red);
-                            f.error.setText("Chang the turn");
-                            changeTurn.setEnabled(true);
-                            changeTurn.setVisible(true);
-                        }
+                        move();
                     }
                     else {
                         System.out.println("failed");
@@ -205,34 +184,15 @@ public class Game {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (players[d.turn-1].x == 9 && d.DiceNumber>0) {
-                        f.error.setBackground(Color.yellow);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                        f.error.setText("Out of map!");
+                        outOfMapError();
                     } else if (!walls.checkWallDown(players, d.turn) && d.DiceNumber>0) {
-                        f.error.setBackground(Color.yellow);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                        f.error.setText("Hit a wall!");
+                        hitWallError();
                     }
                     if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
-                        f.error.setBackground(Color.green);
-                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                        f.error.setText("Go");
                         players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
                         NotePlaces[i][0]=players[d.turn-1].x-1;
                         NotePlaces[i][1]=players[d.turn-1].y;
-                        i++;
-                        d.DiceNumber--;
-                        System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
-                        System.out.println("DiceNumber: "+d.DiceNumber);
-                        MovesLeft.setText("Moves Left: "+d.DiceNumber);
-                        updateIcon(d.turn-1);
-                        if (d.DiceNumber==0){
-                            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                            f.error.setBackground(Color.red);
-                            f.error.setText("Chang the turn");
-                            changeTurn.setEnabled(true);
-                            changeTurn.setVisible(true);
-                        }
+                        move();
                     }
                     else {
                         System.out.println("failed");
@@ -242,7 +202,7 @@ public class Game {
     }
 
     private void setupPlayers(byte count) {
-        players = new Player[count];
+        players = new Player[count]; //count
         for (byte i = 0; i < players.length; i++) {
             players[i] = new Player();
             if (i==0 || i==2){
@@ -270,7 +230,7 @@ public class Game {
         }
     }
     private void GameLoop(byte playersCount) {
-        d.turn = 2;
+        d.turn = 1;
         f.playerTurn.setText("Turn: 1");
         System.out.println("player1(x,y): " + players[d.turn-1].x + "  " + players[d.turn-1].y);
         d.dice.addActionListener(new ActionListener() {
@@ -278,7 +238,7 @@ public class Game {
             public void actionPerformed(ActionEvent e) {
                 f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
                 f.error.setBackground(Color.GREEN);
-                f.error.setText("Go");
+                f.error.setText("Go!");
                 d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
                 d.setTarget(d.DiceNumber);
                 d.dice.setIcon(new ImageIcon(d.target));
@@ -321,10 +281,11 @@ public class Game {
                 System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                 f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
                 f.error.setBackground(Color.orange);
-                f.error.setText("Roll the dice");
-                f.playerTurn.setText("Turn: "+d.turn);
+                f.error.setText("Roll the dice!");
                 MovesLeft.setText("Roll the dice");
                 turnFinished();
+                f.hideCheckMarks();
+                f.showCheckMarks(players[d.turn-1]);
                 changeTurn.setEnabled(false);
                 changeTurn.setVisible(false);
             }
@@ -341,10 +302,11 @@ public class Game {
         f.jl.add(MovesLeft, JLayeredPane.MODAL_LAYER);
         updateIcon(0);
         updateIcon(1);
-        icons[0].setVisible(false);
+        icons[1].setVisible(false);
         f.jl.add(icons[0], JLayeredPane.POPUP_LAYER);
         f.jl.add(icons[1], JLayeredPane.POPUP_LAYER);
         f.jl.add(changeTurn,JLayeredPane.MODAL_LAYER);
+        correspondStats();
         GameLoop(playersCount);
     }
 }

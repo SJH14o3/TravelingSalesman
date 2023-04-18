@@ -8,13 +8,13 @@ public class Walls {
     }
     private void drawHWall(JLayeredPane jl, int x, int y) {
         JLabel label = new JLabel(new ImageIcon("images\\HWall.png"));
-        label.setBounds(320 + 65*x, 129 + 65*y, 61, 5);
-        jl.add(label, JLayeredPane.MODAL_LAYER);
+        label.setBounds(320 + 65*x, 129 + 65*y, 61, 6);
+        jl.add(label, JLayeredPane.POPUP_LAYER);
     }
     private void drawVWall(JLayeredPane jl, int x, int y) {
         JLabel label = new JLabel(new ImageIcon("images\\VWall.png"));
-        label.setBounds(380 + 65*x, 69 + 65*y, 5, 61);
-        jl.add(label, JLayeredPane.MODAL_LAYER);
+        label.setBounds(380 + 65*x, 69 + 65*y, 6, 61);
+        jl.add(label, JLayeredPane.POPUP_LAYER);
     }
     boolean checkWallUp(Player[] players, int turn) {
         if(walls[0][players[turn-1].y][players[turn-1].x-1] == 1) {
@@ -58,8 +58,8 @@ public class Walls {
         for (int i = 0; i < 10; i++) {
             check = true;
             while (check) {
-                x = rng.nextInt(10);
-                y = rng.nextInt(8) + 1;
+                x = rng.nextInt(8) + 1;
+                y = rng.nextInt(6) + 2;
                 if (houses[x][y + 1] == 0 && houses[x][y] == 0) {
                     houses[x][y + 1] = houses[x][y] = 1;
                     placeWall(0, x, y);
@@ -69,8 +69,8 @@ public class Walls {
             }
             check = true;
             while (check) {
-                y = rng.nextInt(10);
-                x = rng.nextInt(8) + 1;
+                y = rng.nextInt(8) + 1;
+                x = rng.nextInt(6) + 2;
                 if (houses[x + 1][y] == 0 && houses[x][y] == 0) {
                     houses[x + 1][y] = houses[x][y] = 1;
                     placeWall(1, x, y);
