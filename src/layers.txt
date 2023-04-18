@@ -9,14 +9,19 @@
 		Dice
 		Dice_MovesLeft
 		Quest_Panel_Background
-		Walls
 		JLabel error
+		strenght
+		strenght_icon
+		money
+		money_icon
+		who_turn_is
 	}
 	"PopUp": {
 		Quest_Icon
 		Quest_Text
 		Movement_Button
 		Player_Icons
+		Walls
 	}
 	"Drag": {
 	}
