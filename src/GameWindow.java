@@ -24,7 +24,7 @@ public class GameWindow{
         for (int i = 0; i < 10; i++) {
             for(int j = 0; j < 10; j++) {
                 checkMark[i][j] = new JLabel(new ImageIcon("images\\check.png"));
-                checkMark[i][j].setBounds(319 + i*65, 67 + j*65, 63, 63);
+                checkMark[i][j].setBounds(318 + i*65, 67 + j*65, 65, 65);
                 checkMark[i][j].setVisible(false);
                 jl.add(checkMark[i][j], JLayeredPane.MODAL_LAYER);
             }
