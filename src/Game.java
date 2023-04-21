@@ -20,7 +20,7 @@ public class Game {
     JButton changeTurn;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
-    MarketFrame marketFrame=new MarketFrame();
+    //MarketFrame marketFrame=new MarketFrame();
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
     private byte questNum = 8;
@@ -59,17 +59,47 @@ public class Game {
     }
     private void MarketDivide(){
         for (int j=0 ; j< markets.length ; j++) {
-            int x = random.nextInt(10);
-            int y = random.nextInt(10);
+            int x=0,y=0;
+            if (j==0) {
+                x = random.nextInt(5);
+                y = random.nextInt(5);
+            } else if (j==1) {
+                x = random.nextInt(5);
+                y = random.nextInt(5)+5;
+            } else if (j==2) {
+                x = random.nextInt(5)+5;
+                y = random.nextInt(5);
+            } else if (j==3) {
+                x = random.nextInt(5)+5;
+                y = random.nextInt(5)+5;
+            } else if (j==4) {
+                x = random.nextInt(10);
+                y = random.nextInt(10);
+            }
             if (f.map.map[x][y] == 0) {
                 f.map.map[x][y] = 2;
             } else {
                 while (f.map.map[x][y] != 0) {
-                    x = random.nextInt(10);
-                    y = random.nextInt(10);
+                    if (j==0) {
+                        x = random.nextInt(5);
+                        y = random.nextInt(5);
+                    } else if (j==1) {
+                        x = random.nextInt(5);
+                        y = random.nextInt(5)+5;
+                    } else if (j==2) {
+                        x = random.nextInt(5)+5;
+                        y = random.nextInt(5);
+                    } else if (j==3) {
+                        x = random.nextInt(5)+5;
+                        y = random.nextInt(5)+5;
+                    } else if (j==4) {
+                        x = random.nextInt(10);
+                        y = random.nextInt(10);
+                    }
                 }
                 f.map.map[x][y] = 2;
             }
+            markets[j]=new JLabel();
             markets[j].setBounds(319+y*65,67+x*65,63,63);
             markets[j].setBackground(Color.orange);
             markets[j].setVisible(true);
@@ -398,6 +428,24 @@ public class Game {
                 }
             }
         });
+//        marketFrame.PowerButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                marketFrame.marketframe.setVisible(false);
+//                f.gameWindow.setEnabled(true);
+//                players[d.turn - 1].power += 40;
+//                players[d.turn-1].money-=50;
+//                scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" power: "+players[d.turn-1].power);
+//                scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+//            }
+//        });
+//        marketFrame.QuestButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//
+//            }
+//        });
+
 
         MovesLeft=new JLabel();
         MovesLeft.setBounds(75,435,100,30);

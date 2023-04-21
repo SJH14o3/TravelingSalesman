@@ -1,30 +1,37 @@
 import javax.swing.*;
-import java.awt.*;
 
 public class MarketFrame {
-    private JFrame marketframe=new JFrame("Market");
-    public JButton QuestButton = new JButton("Buy the quest place");
-    public JButton PowerButton = new JButton("Buy power");
+    public JFrame marketframe=new JFrame("Market");
+    public JButton QuestButton = new JButton();
+    public JButton PowerButton = new JButton();
     public JLabel info=new JLabel();
-    JLabel test=new JLabel("salam");
-//    private ImageIcon QuestIMG=new ImageIcon("images\\")
+    private JLabel QuestText=new JLabel("Buy the quest place");
+    private ImageIcon QuestIMG=new ImageIcon("images\\questbutton1.png") , PowerIMG=new ImageIcon("images\\sword.png");
     MarketFrame(){
         marketframe.setBounds(730,330,400,250);
-
         marketframe.setEnabled(true);
-        test.setBounds(0,0,400,250);
-        test.setVisible(true);
-        test.setOpaque(true);
-        test.setBackground(Color.yellow);
-        test.setEnabled(true);
+        marketframe.setLayout(null);
+        marketframe.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE );
+        marketframe.setResizable(false);
+
+        QuestText.setBounds(0,150,400,30);
+        QuestText.setEnabled(true);
+        QuestText.setVisible(true);
+        QuestText.setOpaque(true);
+        QuestText.setHorizontalAlignment(SwingConstants.CENTER);
+
         PowerButton.setBounds(20,100,150,70);
         PowerButton.setVisible(true);
         PowerButton.setOpaque(true);
-        //PowerButton.setIcon();
+        PowerButton.setIcon(PowerIMG);
+        PowerButton.setText("Buy power");
+
         QuestButton.setBounds(210,100,150,70);
         QuestButton.setVisible(true);
         QuestButton.setOpaque(true);
-        marketframe.add(test);
+        QuestButton.setIcon(QuestIMG);
+        QuestButton.add(QuestText);
+
         marketframe.add(PowerButton);
         marketframe.add(QuestButton);
         marketframe.setVisible(true);
