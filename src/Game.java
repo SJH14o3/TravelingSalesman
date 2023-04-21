@@ -2,18 +2,84 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 public class Game {
+    //map[x][y]==1==loot
+    //map[x][y]==2==market
+    private static int LootDrawCounter=0;
+    private int LootCash=70;
     int i=0;
+    private Random random;
+    private JLabel[][] loots=new JLabel[13][2] , crossedPlace=new JLabel[11][11];
+    private JLabel[] markets=new JLabel[5] ,icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     Player[] players;
+    ScoreBoard scoreboard;
+    ImageIcon cross=new ImageIcon("images\\cross.png");
     JLabel MovesLeft;
     JButton changeTurn;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
-    JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
+    MarketFrame marketFrame=new MarketFrame();
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
     private byte questNum = 8;
+    private void LootDivide(){
+        for (int j=0 ; j<13 ; j++) {
+            int x = random.nextInt(10);
+            int y = random.nextInt(10);
+            if (f.map.map[x][y] == 0) {
+                f.map.map[x][y] = 1;
+            } else {
+                while (f.map.map[x][y] != 0) {
+                    x = random.nextInt(10);
+                    y = random.nextInt(10);
+                }
+                f.map.map[x][y] = 1;
+            }
+        }
+    }
+     private void LootDraw(){
+        loots[LootDrawCounter][d.turn-1].setBounds(319+players[d.turn-1].y*65,67+players[d.turn-1].x*65,63,63);
+        loots[LootDrawCounter][d.turn-1].setBackground(Color.cyan);
+        loots[LootDrawCounter][d.turn-1].setVisible(true);
+        loots[LootDrawCounter][d.turn-1].setOpaque(true);
+        f.jl.add(loots[LootDrawCounter][d.turn-1],JLayeredPane.MODAL_LAYER);
+        LootDrawCounter++;
+    }
+    private void LootShower(){
+        for (int j = 0; j < loots.length; j++) {
+            loots[j][d.turn-1].setVisible(true);
+        }
+    }
+    private void LootHider(){
+        for (int j = 0; j < loots.length; j++) {
+            loots[j][d.turn-1].setVisible(false);
+        }
+    }
+    private void MarketDivide(){
+        for (int j=0 ; j< markets.length ; j++) {
+            int x = random.nextInt(10);
+            int y = random.nextInt(10);
+            if (f.map.map[x][y] == 0) {
+                f.map.map[x][y] = 2;
+            } else {
+                while (f.map.map[x][y] != 0) {
+                    x = random.nextInt(10);
+                    y = random.nextInt(10);
+                }
+                f.map.map[x][y] = 2;
+            }
+            markets[j].setBounds(319+y*65,67+x*65,63,63);
+            markets[j].setBackground(Color.orange);
+            markets[j].setVisible(true);
+            markets[j].setOpaque(true);
+            f.jl.add(markets[j],JLayeredPane.MODAL_LAYER);
+        }
+    }
+    private void MarketWork(){
+
+    }
     boolean CheckNotePlaces(String direction){
         if (direction=="Left") {
             for (int x = 0; x<NotePlaces.length ; x++) {
@@ -72,17 +138,24 @@ public class Game {
         f.error.setBackground(Color.green);
         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
         f.error.setText("Go!");
-        i++;
         d.DiceNumber--;
         System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
         System.out.println("DiceNumber: "+d.DiceNumber);
         MovesLeft.setText("Moves Left: "+d.DiceNumber);
         updateIcon(d.turn-1);
+        crossedPlace[NotePlaces[i][0]][NotePlaces[i][1]].setVisible(true);
+        i++;
         players[d.turn-1].places[players[d.turn-1].y][players[d.turn-1].x] = true;
         if (d.DiceNumber==0){
             f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
             f.error.setBackground(Color.red);
             f.error.setText("Change the turn!");
+            if (f.map.map[players[d.turn-1].x][players[d.turn-1].y]==1){ //loot
+                LootDraw();
+                players[d.turn-1].money+=LootCash;
+                scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+                f.map.map[players[d.turn-1].x][players[d.turn-1].y]=0; //null
+            }
             changeTurn.setEnabled(true);
             changeTurn.setVisible(true);
         }
@@ -136,6 +209,7 @@ public class Game {
                         NotePlaces[i][0]=players[d.turn-1].x;
                         NotePlaces[i][1]=players[d.turn-1].y+1;
                         move();
+
                     }
                     else {
                         System.out.println("failed");
@@ -208,9 +282,13 @@ public class Game {
             if (i==0 || i==2){
                 players[i].x=0;
                 players[i].y=10;
+                scoreboard.Money[i].setText(players[i].getName()+" money: "+players[i].money);
+                scoreboard.Power[i].setText(players[i].getName()+" power: "+players[i].power);
             } else if (i==1 || i==3) {
                 players[i].x=9;
                 players[i].y=-1;
+                scoreboard.Money[i].setText(players[i].getName()+" money: "+players[i].money);
+                scoreboard.Power[i].setText(players[i].getName()+" power: "+players[i].power);
             }
             System.out.println(players[i].getName());
         }
@@ -222,11 +300,17 @@ public class Game {
             players[p1].money+=x;
             players[p2].money-=x;
             players[p1].power= (short) (players[p1].power-players[p2].power);
+            scoreboard.Money[p1].setText(players[p1].getName()+" money: "+players[p1].money);
+            scoreboard.Power[p1].setText(players[p1].getName()+" power: "+players[p1].power);
+            scoreboard.Money[p2].setText(players[p2].getName()+" money: "+players[p2].money);
         } else if (players[p1].power<players[p2].power) {
             x=(short) (((players[p2].power-players[p1].power)*players[p1].money)/(players[p1].power+players[p2].power));
             players[p2].money+=x;
             players[p1].money-=x;
             players[p2].power= (short) (players[p2].power-players[p1].power);
+            scoreboard.Money[p1].setText(players[p1].getName()+" money: "+players[p1].money);
+            scoreboard.Money[p2].setText(players[p2].getName()+" money: "+players[p2].money);
+            scoreboard.Power[p2].setText(players[p2].getName()+" power: "+players[p2].power);
         }
     }
     private void GameLoop(byte playersCount) {
@@ -261,7 +345,26 @@ public class Game {
         return questNum;
     }
     Game(byte playersCount) {
+        random=new Random();
+        scoreboard=new ScoreBoard();
         setupPlayers(playersCount);
+        LootDivide();
+        MarketDivide();
+        for (int i = 0 ; i<crossedPlace.length ; i++){
+            for (int j = 0 ; j<crossedPlace[i].length ; j++){
+                crossedPlace[i][j]=new JLabel(cross);
+                crossedPlace[i][j].setBounds(319 + j*(65), 67 + i*(65) , 65, 65);
+                crossedPlace[i][j].setOpaque(true);
+                crossedPlace[i][j].setVisible(false);
+                f.gameWindow.add(crossedPlace[i][j]);
+                f.jl.add(crossedPlace[i][j],JLayeredPane.MODAL_LAYER);
+            }
+        }
+        for (int j = 0; j < loots.length; j++) {
+            for (int k = 0; k < loots[j].length; k++) {
+                loots[j][k]=new JLabel();
+            }
+        }
 
         changeTurn=new JButton("Tap to change turn");
         changeTurn.setBounds(55,480,150,100);
@@ -283,14 +386,18 @@ public class Game {
                 f.error.setBackground(Color.orange);
                 f.error.setText("Roll the dice!");
                 MovesLeft.setText("Roll the dice");
+                LootHider();
                 turnFinished();
+                LootShower();
                 f.hideCheckMarks();
                 //f.showCheckMarks();
                 changeTurn.setEnabled(false);
                 changeTurn.setVisible(false);
+                for (int k = 0 ; NotePlaces[k][0]!=-2 || NotePlaces[k][1]!=-2 ; k++) {
+                    crossedPlace[NotePlaces[k][0]][NotePlaces[k][1]].setVisible(false);
+                }
             }
         });
-
 
         MovesLeft=new JLabel();
         MovesLeft.setBounds(75,435,100,30);
