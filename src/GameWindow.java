@@ -14,7 +14,6 @@ public class GameWindow{
         gameWindow.setLayout(null);
         gameWindow.setTitle("Traveling Salesman");
         gameWindow.setResizable(false);
-        //TODO create a program icon.
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ImageIcon I = new ImageIcon("images\\icon.png");
         gameWindow.setIconImage(I.getImage());

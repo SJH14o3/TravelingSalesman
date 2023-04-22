@@ -29,7 +29,7 @@ public class Map extends JPanel {
     Trap[] traps;
     public void markTrap(int x, int y, int turn) {
         for (int i = 0; i < traps.length; i++) {
-            if (traps[i].x == x && traps[i].y == y) {
+            if (traps[i].x == y && traps[i].y == x) {
                 traps[i].showTrap[turn] = true;
                 return;
             }
@@ -97,13 +97,6 @@ public class Map extends JPanel {
             } while(!checkTrapLoc(x, y) || !isEmpty(x, y));
             map[x][y] = 3;
             traps[i] = new Trap(y, x);
-        }
-    }
-    public void revealTraps(int turn) {
-        for(int i = 0; i < traps.length; i++) {
-            if (traps[i].showTrap[turn]) {
-                traps[i].icon.setVisible(true);
-            }
         }
     }
     private void setupCrossPlaces() {

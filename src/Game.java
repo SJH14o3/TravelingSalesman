@@ -92,11 +92,13 @@ public class Game {
         f.TrapDialog(players[d.turn-1].money/10, "Money!");
         players[d.turn-1].money -= players[d.turn-1].money/10;
         f.updateCoinCount(players[d.turn-1].money);
+        scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
     }
     private void trapPower() {
         f.TrapDialog(players[d.turn-1].power/10, "Power!");
         players[d.turn-1].power -= players[d.turn-1].power/10;
         f.updatePowerCount(players[d.turn-1].power);
+        scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" power: "+players[d.turn-1].power);
     }
     private void hitTrap() {
         if (players[d.turn-1].money < 100) {
@@ -178,7 +180,6 @@ public class Game {
     public void MovementActions(byte playersCount){
         i=0;
             f.m.Left.addActionListener(new ActionListener() {
-                //TODO make error messages
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
