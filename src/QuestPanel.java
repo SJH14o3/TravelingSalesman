@@ -5,46 +5,38 @@ public class QuestPanel {
     private JLabel icon = new JLabel();
     private JLabel text = new JLabel();
     private JLabel bg = new JLabel(new ImageIcon("images\\questPanel.png"));
-    void changeQuestIcon(byte num) {
+    void changeQuestIcon(int num) {
         String target = "images\\Treasures\\" + num + ".png";
-        System.out.println(target);
+        text.setText(getQuestItemName(num));
         icon.setIcon(new ImageIcon(target));
     }
-    void setText(byte num) {
-        switch(num) {
+    static public String getQuestItemName(int in) {
+        switch(in) {
             case 1:
-                text.setText("Glass Chalice");
-                break;
+                return "Glass Chalice";
             case 2:
-                text.setText("Wooden Bow");
-                break;
+                return "Wooden Bow";
             case 3:
-                text.setText("Steel Shield");
-                break;
+                return "Steel Shield";
             case 4:
-                text.setText("Dragon's Scroll");
-                break;
+                return "Dragon's Scroll";
             case 5:
-                text.setText("Golden Goblet");
-                break;
+                return "Golden Goblet";
             case 6:
-                text.setText("Jeweled Sword");
-                break;
+                return "Jeweled Sword";
             case 7:
-                text.setText("Golden Key");
-                break;
+                return "Golden Key";
             case 8:
-                text.setText("Diamond Ring");
-                break;
+                return "Diamond Ring";
             default:
                 break;
         }
+        return "";
     }
     QuestPanel(JLayeredPane jl) {
-        changeQuestIcon((byte) 1);
+        changeQuestIcon(1);
         icon.setBounds(1055, 8, 220, 220);
         jl.add(icon, JLayeredPane.POPUP_LAYER);
-        setText((byte) 1);
         text.setBounds(1045, 228, 239, 35);
         text.setForeground(Color.WHITE);
         text.setHorizontalAlignment(SwingConstants.CENTER);

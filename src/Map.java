@@ -27,6 +27,16 @@ public class Map extends JPanel {
         }
     }
     Trap[] traps;
+    private void setupTreasures() { //Temporarily will be manual.
+        map[1][2] = 11;
+        map[1][5] = 12;
+        map[3][5] = 13;
+        map[4][8] = 14;
+        map[5][1] = 15;
+        map[6][5] = 16;
+        map[8][2] = 17;
+        map[8][8] = 18;
+    }
     public void markTrap(int x, int y, int turn) {
         for (int i = 0; i < traps.length; i++) {
             if (traps[i].x == y && traps[i].y == x) {
@@ -177,6 +187,9 @@ public class Map extends JPanel {
         for (int i =0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 System.out.print(map[i][j] + " ");
+                if (map[i][j] < 10) {
+                    System.out.print(" ");
+                }
             }
             System.out.println();
         }
@@ -188,6 +201,7 @@ public class Map extends JPanel {
         border.setVisible(true);
         setupCrossPlaces();
         setCastle();
+        setupTreasures();
         setTraps();
         MarketDivide();
         setupLoots();

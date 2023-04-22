@@ -4,11 +4,12 @@ import java.awt.*;
 public class GameWindow{
     public JFrame gameWindow;
     public JLabel error,playerTurn, showName, coins, coinsCount, strength, strengthCount;
-    public JLayeredPane jl;
+    public JLayeredPane jl = new JLayeredPane();
     Map map = new Map();
     MovementButtons m;
     JLabel[] startImg = {new JLabel(new ImageIcon("images\\startLeft.png")), new JLabel(new ImageIcon("images\\startRight.png"))};
     JLabel background = new JLabel(new ImageIcon("images\\background.png"));
+    QuestPanel questPanel = new QuestPanel(jl);
     private void setupFrame() {
         gameWindow.setBounds(235,5,1300,800);
         gameWindow.setLayout(null);
@@ -18,6 +19,10 @@ public class GameWindow{
         ImageIcon I = new ImageIcon("images\\icon.png");
         gameWindow.setIconImage(I.getImage());
         gameWindow.setVisible(true);
+    }
+    public void questFound(int in) {
+        String Target = "Quest Item \"" + QuestPanel.getQuestItemName(in+1) + "\"has been found!";
+        JOptionPane.showMessageDialog(null, Target, "Founded Quest Item!", JOptionPane.INFORMATION_MESSAGE);
     }
     public void updateCoinCount(int in) {
         coinsCount.setText(String.valueOf(in));
@@ -30,9 +35,9 @@ public class GameWindow{
                 "Found Loot!", JOptionPane.INFORMATION_MESSAGE);
     }
     public void TrapDialog(int a, String str) {
-        String target = "You lost " + a + " " + str;
+        String target = "Hit a trap! You lost " + a + " " + str;
         JOptionPane.showMessageDialog(null, target,
-                "Hit a Trap!", JOptionPane.WARNING_MESSAGE);
+                "Hit a Trap!", JOptionPane.ERROR_MESSAGE);
     }
     GameWindow() {
         gameWindow=new JFrame();
@@ -54,13 +59,10 @@ public class GameWindow{
         playerTurn.setVisible(true);
         playerTurn.setOpaque(true);
 
-
-        jl = new JLayeredPane();
         jl.setBounds(0,0, 1300, 800);
         gameWindow.add(jl);
         setupFrame();
         //new Dice(gameWindow);
-        new QuestPanel(jl);
         m=new MovementButtons(jl);
         map.setBounds(291, 40, 704, 704);
         jl.add(map, JLayeredPane.PALETTE_LAYER);

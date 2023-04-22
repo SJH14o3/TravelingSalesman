@@ -15,13 +15,13 @@ public class Game {
     ScoreBoard scoreboard;
     ImageIcon cross=new ImageIcon("images\\cross.png");
     JLabel MovesLeft;
-    JButton changeTurn;
+    JButton changeTurn, Castle;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
     //MarketFrame marketFrame=new MarketFrame();
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
-    private byte questNum = 8;
+    private int questNum = 1;
     private void MarketWork(){
 
     }
@@ -79,26 +79,35 @@ public class Game {
             }
         }
     }
+    private void checkCastleEnabled() {
+        if (Castle.isEnabled()) {
+            Castle.setVisible(false);
+            Castle.setEnabled(false);
+        }
+    }
+    private void changeMoney(int in) {
+        players[d.turn-1].money += in;
+        f.updateCoinCount(players[d.turn-1].money);
+        scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+    }
+    private void changePower(int in) {
+        players[d.turn-1].power += in;
+        f.updatePowerCount(players[d.turn-1].power);
+        scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" Power: "+players[d.turn-1].power);
+    }
     private void lootFound() {
         f.map.LootDraw(d.turn-1, players);
         f.lootDialog();
-        players[d.turn-1].money+=LootCash;
-        f.updateCoinCount(players[d.turn-1].money);
-        System.out.println("loot found!");
-        scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+        changeMoney(LootCash);
         f.map.map[players[d.turn-1].x][players[d.turn-1].y]=0; //null
     }
     private void trapMoney() {
         f.TrapDialog(players[d.turn-1].money/10, "Money!");
-        players[d.turn-1].money -= players[d.turn-1].money/10;
-        f.updateCoinCount(players[d.turn-1].money);
-        scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+        changeMoney(-players[d.turn-1].money/10);
     }
     private void trapPower() {
         f.TrapDialog(players[d.turn-1].power/10, "Power!");
-        players[d.turn-1].power -= players[d.turn-1].power/10;
-        f.updatePowerCount(players[d.turn-1].power);
-        scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" power: "+players[d.turn-1].power);
+        changePower(-players[d.turn-1].power/10);
     }
     private void hitTrap() {
         if (players[d.turn-1].money < 100) {
@@ -118,7 +127,39 @@ public class Game {
         }
         f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
     }
+    private void checkLocation(boolean startRound) {
+        if (players[d.turn-1].x > -1 && players[d.turn-1].y > -1 && players[d.turn-1].y < 10 && players[d.turn-1].x < 10) {
+            switch(f.map.map[players[d.turn-1].x][players[d.turn-1].y]) {
+                case 1:
+                    lootFound();
+                    break;
+                case 3:
+                    if (!startRound) {
+                        hitTrap();
+                    }
+                    break;
+                case 4:
+                    Castle.setVisible(true);
+                    Castle.setEnabled(true);
+                    break;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                    if (!players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11]) {
+                        players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11] = true;
+                        f.questFound(f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11);
+                    }
+                    break;
+            }
+        }
+    }
     private void move() {
+        checkCastleEnabled();
         f.error.setBackground(Color.green);
         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
         f.error.setText("Go!");
@@ -129,13 +170,7 @@ public class Game {
             f.map.crossedPlace[NotePlaces[i][0]][NotePlaces[i][1]].setVisible(true);
         }
         i++;
-        if (f.map.map[players[d.turn-1].x][players[d.turn-1].y]==1){ //loot
-            lootFound();
-        }
-        else if (f.map.map[players[d.turn-1].x][players[d.turn-1].y]==3) {
-            hitTrap();
-        }
-        players[d.turn-1].places[players[d.turn-1].y][players[d.turn-1].x] = true;
+        checkLocation(false);
         if (d.DiceNumber==0){
             f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
             f.error.setBackground(Color.red);
@@ -165,6 +200,7 @@ public class Game {
         icons[d.turn-1].setVisible(true);
         f.map.showTraps(d.turn-1);
         correspondStats();
+        checkLocation(true);
         i = 0;
     }
     private void outOfMapError() {
@@ -264,6 +300,35 @@ public class Game {
             }
         }
     }
+    private void castleAction() {
+        System.out.println("CASTLE!");
+        String in = JOptionPane.showInputDialog("Enter Quest Location");
+        if (in.charAt(0) >= 49 && in.charAt(0) <= 57 && in.charAt(1) == ' ' && in.charAt(2) >= 49 && in.charAt(2) <= 57 ) {
+            int y = in.charAt(2) - 49;
+            int x = in.charAt(0) - 49;
+            if (f.map.map[y][x] > 10 && f.map.map[y][x] < 19 && players[d.turn-1].knowQuestsLoc[f.map.map[y][x] - 11] && questNum == f.map.map[y][x] - 10) {
+                JOptionPane.showMessageDialog(null, "Successfully found quest!", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
+                changeMoney(100 + questNum * 100);
+                players[d.turn-1].questsFound[questNum-1] = true;
+                questNum++;
+                f.questPanel.changeQuestIcon((byte) questNum);
+                f.map.map[y][x] = 0;
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Wrong!", "Wrong!", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Try again!", "Wrong Input", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    private void setupCastleButton() {
+        Castle = new JButton(new ImageIcon("images\\CastleB.png"));
+        Castle.setBounds(1111, 330, 100, 100);
+        Castle.setEnabled(false);
+        Castle.setVisible(false);
+        Castle.addActionListener(e -> castleAction());
+    }
     private void Fight(int p1,int p2){
         short x;
         if (players[p1].power>players[p2].power){
@@ -311,7 +376,7 @@ public class Game {
     void questDone() {
         questNum--;
     }
-    public byte getQuestNum() {
+    public int getQuestNum() {
         return questNum;
     }
     Game(byte playersCount) {
@@ -350,6 +415,7 @@ public class Game {
                 f.error.setText("Roll the dice!");
                 MovesLeft.setText("Roll the dice");
                 f.map.LootHider(d.turn-1);
+                checkCastleEnabled();
                 turnFinished();
                 f.map.LootShower(d.turn-1);
                 //f.showCheckMarks();
@@ -396,6 +462,8 @@ public class Game {
         f.jl.add(icons[1], JLayeredPane.POPUP_LAYER);
         f.jl.add(changeTurn,JLayeredPane.MODAL_LAYER);
         correspondStats();
+        setupCastleButton();
+        f.jl.add(Castle, JLayeredPane.MODAL_LAYER);
         GameLoop(playersCount);
     }
 }
