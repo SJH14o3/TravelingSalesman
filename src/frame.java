@@ -30,6 +30,8 @@ public class frame{
         f.add(newgame);
         f.add(loadgame);
         f.add(l);
+        ImageIcon I = new ImageIcon("images\\icon.png");
+        f.setIconImage(I.getImage());
         f.setBounds(150,5,1300,800);
         f.setLayout(null);
         f.setVisible(true);
