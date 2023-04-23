@@ -3,7 +3,6 @@ import javax.swing.*;
 public class Dice {
     public byte max=6,min=1;
     public byte DiceNumber,turn=1;
-    MovementButtons movementButtons=new MovementButtons();
     public byte rang= (byte) (max-min+1);
     public JButton dice;
     public String target;

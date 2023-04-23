@@ -7,106 +7,21 @@ import java.util.Random;
 public class Game {
     //map[x][y]==1==loot
     //map[x][y]==2==market
-    private static int LootDrawCounter=0;
-    private int LootCash=70;
+    private final int LootCash=70;
     int i=0;
     private Random random;
-    private JLabel[][] loots=new JLabel[13][2] , crossedPlace=new JLabel[11][11];
-    private JLabel[] markets=new JLabel[5] ,icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
+    private JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     Player[] players;
     ScoreBoard scoreboard;
     ImageIcon cross=new ImageIcon("images\\cross.png");
     JLabel MovesLeft;
-    JButton changeTurn;
+    JButton changeTurn, Castle;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
     GameWindow f=new GameWindow();
     //MarketFrame marketFrame=new MarketFrame();
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
-    private byte questNum = 8;
-    private void LootDivide(){
-        for (int j=0 ; j<13 ; j++) {
-            int x = random.nextInt(10);
-            int y = random.nextInt(10);
-            if (f.map.map[x][y] == 0) {
-                f.map.map[x][y] = 1;
-            } else {
-                while (f.map.map[x][y] != 0) {
-                    x = random.nextInt(10);
-                    y = random.nextInt(10);
-                }
-                f.map.map[x][y] = 1;
-            }
-        }
-    }
-     private void LootDraw(){
-        loots[LootDrawCounter][d.turn-1].setBounds(319+players[d.turn-1].y*65,67+players[d.turn-1].x*65,63,63);
-        loots[LootDrawCounter][d.turn-1].setBackground(Color.cyan);
-        loots[LootDrawCounter][d.turn-1].setVisible(true);
-        loots[LootDrawCounter][d.turn-1].setOpaque(true);
-        f.jl.add(loots[LootDrawCounter][d.turn-1],JLayeredPane.MODAL_LAYER);
-        LootDrawCounter++;
-    }
-    private void LootShower(){
-        for (int j = 0; j < loots.length; j++) {
-            loots[j][d.turn-1].setVisible(true);
-        }
-    }
-    private void LootHider(){
-        for (int j = 0; j < loots.length; j++) {
-            loots[j][d.turn-1].setVisible(false);
-        }
-    }
-    private void MarketDivide(){
-        for (int j=0 ; j< markets.length ; j++) {
-            int x=0,y=0;
-            if (j==0) {
-                x = random.nextInt(5);
-                y = random.nextInt(5);
-            } else if (j==1) {
-                x = random.nextInt(5);
-                y = random.nextInt(5)+5;
-            } else if (j==2) {
-                x = random.nextInt(5)+5;
-                y = random.nextInt(5);
-            } else if (j==3) {
-                x = random.nextInt(5)+5;
-                y = random.nextInt(5)+5;
-            } else if (j==4) {
-                x = random.nextInt(10);
-                y = random.nextInt(10);
-            }
-            if (f.map.map[x][y] == 0) {
-                f.map.map[x][y] = 2;
-            } else {
-                while (f.map.map[x][y] != 0) {
-                    if (j==0) {
-                        x = random.nextInt(5);
-                        y = random.nextInt(5);
-                    } else if (j==1) {
-                        x = random.nextInt(5);
-                        y = random.nextInt(5)+5;
-                    } else if (j==2) {
-                        x = random.nextInt(5)+5;
-                        y = random.nextInt(5);
-                    } else if (j==3) {
-                        x = random.nextInt(5)+5;
-                        y = random.nextInt(5)+5;
-                    } else if (j==4) {
-                        x = random.nextInt(10);
-                        y = random.nextInt(10);
-                    }
-                }
-                f.map.map[x][y] = 2;
-            }
-            markets[j]=new JLabel();
-            markets[j].setBounds(319+y*65,67+x*65,63,63);
-            markets[j].setBackground(Color.orange);
-            markets[j].setVisible(true);
-            markets[j].setOpaque(true);
-            f.jl.add(markets[j],JLayeredPane.MODAL_LAYER);
-        }
-    }
+    private int questNum = 1;
     private void MarketWork(){
 
     }
@@ -164,28 +79,102 @@ public class Game {
             }
         }
     }
+    private void checkCastleEnabled() {
+        if (Castle.isEnabled()) {
+            Castle.setVisible(false);
+            Castle.setEnabled(false);
+        }
+    }
+    private void changeMoney(int in) {
+        players[d.turn-1].money += in;
+        f.updateCoinCount(players[d.turn-1].money);
+        scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+    }
+    private void changePower(int in) {
+        players[d.turn-1].power += in;
+        f.updatePowerCount(players[d.turn-1].power);
+        scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" Power: "+players[d.turn-1].power);
+    }
+    private void lootFound() {
+        f.map.LootDraw(d.turn-1, players);
+        f.lootDialog();
+        changeMoney(LootCash);
+        f.map.map[players[d.turn-1].x][players[d.turn-1].y]=0; //null
+    }
+    private void trapMoney() {
+        f.TrapDialog(players[d.turn-1].money/10, "Money!");
+        changeMoney(-players[d.turn-1].money/10);
+    }
+    private void trapPower() {
+        f.TrapDialog(players[d.turn-1].power/10, "Power!");
+        changePower(-players[d.turn-1].power/10);
+    }
+    private void hitTrap() {
+        if (players[d.turn-1].money < 100) {
+            trapPower();
+        }
+        else if (players[d.turn-1].power < 50) {
+            trapMoney();
+        }
+        else {
+            int r = random.nextInt(2);
+            if (r == 0) {
+                trapMoney();
+            }
+            else {
+                trapPower();
+            }
+        }
+        f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+    }
+    private void checkLocation(boolean startRound) {
+        if (players[d.turn-1].x > -1 && players[d.turn-1].y > -1 && players[d.turn-1].y < 10 && players[d.turn-1].x < 10) {
+            switch(f.map.map[players[d.turn-1].x][players[d.turn-1].y]) {
+                case 1:
+                    lootFound();
+                    break;
+                case 3:
+                    if (!startRound) {
+                        hitTrap();
+                    }
+                    break;
+                case 4:
+                    Castle.setVisible(true);
+                    Castle.setEnabled(true);
+                    break;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                    if (!players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11]) {
+                        players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11] = true;
+                        f.questFound(f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11);
+                    }
+                    break;
+            }
+        }
+    }
     private void move() {
+        checkCastleEnabled();
         f.error.setBackground(Color.green);
         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
         f.error.setText("Go!");
         d.DiceNumber--;
-        System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
-        System.out.println("DiceNumber: "+d.DiceNumber);
         MovesLeft.setText("Moves Left: "+d.DiceNumber);
         updateIcon(d.turn-1);
-        crossedPlace[NotePlaces[i][0]][NotePlaces[i][1]].setVisible(true);
+        if (NotePlaces[i][0] > -1 && NotePlaces[i][0] < 10 && NotePlaces[i][1] > -1 && NotePlaces[i][1] < 10) {
+            f.map.crossedPlace[NotePlaces[i][0]][NotePlaces[i][1]].setVisible(true);
+        }
         i++;
-        players[d.turn-1].places[players[d.turn-1].y][players[d.turn-1].x] = true;
+        checkLocation(false);
         if (d.DiceNumber==0){
             f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
             f.error.setBackground(Color.red);
             f.error.setText("Change the turn!");
-            if (f.map.map[players[d.turn-1].x][players[d.turn-1].y]==1){ //loot
-                LootDraw();
-                players[d.turn-1].money+=LootCash;
-                scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
-                f.map.map[players[d.turn-1].x][players[d.turn-1].y]=0; //null
-            }
             changeTurn.setEnabled(true);
             changeTurn.setVisible(true);
         }
@@ -209,8 +198,9 @@ public class Game {
             d.turn--;
         }
         icons[d.turn-1].setVisible(true);
-        System.out.println("turn for " + d.turn + "\n");
+        f.map.showTraps(d.turn-1);
         correspondStats();
+        checkLocation(true);
         i = 0;
     }
     private void outOfMapError() {
@@ -226,7 +216,6 @@ public class Game {
     public void MovementActions(byte playersCount){
         i=0;
             f.m.Left.addActionListener(new ActionListener() {
-                //TODO make error messages
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
@@ -240,9 +229,6 @@ public class Game {
                         NotePlaces[i][1]=players[d.turn-1].y+1;
                         move();
 
-                    }
-                    else {
-                        System.out.println("failed");
                     }
                 }
             });
@@ -260,9 +246,6 @@ public class Game {
                         NotePlaces[i][1]=players[d.turn-1].y-1;
                         move();
                     }
-                    else {
-                        System.out.println("failed");
-                    }
                 }
             });
             f.m.Up.addActionListener(new ActionListener() {
@@ -278,9 +261,6 @@ public class Game {
                         NotePlaces[i][0]=players[d.turn-1].x+1;
                         NotePlaces[i][1]=players[d.turn-1].y;
                         move();
-                    }
-                    else {
-                        System.out.println("failed");
                     }
                 }
             });
@@ -298,9 +278,6 @@ public class Game {
                         NotePlaces[i][1]=players[d.turn-1].y;
                         move();
                     }
-                    else {
-                        System.out.println("failed");
-                    }
                 }
             });
     }
@@ -309,6 +286,7 @@ public class Game {
         players = new Player[count]; //count
         for (byte i = 0; i < players.length; i++) {
             players[i] = new Player();
+            players[i].power = 1000;
             if (i==0 || i==2){
                 players[i].x=0;
                 players[i].y=10;
@@ -320,8 +298,36 @@ public class Game {
                 scoreboard.Money[i].setText(players[i].getName()+" money: "+players[i].money);
                 scoreboard.Power[i].setText(players[i].getName()+" power: "+players[i].power);
             }
-            System.out.println(players[i].getName());
         }
+    }
+    private void castleAction() {
+        System.out.println("CASTLE!");
+        String in = JOptionPane.showInputDialog("Enter Quest Location");
+        if (in.charAt(0) >= 49 && in.charAt(0) <= 57 && in.charAt(1) == ' ' && in.charAt(2) >= 49 && in.charAt(2) <= 57 ) {
+            int y = in.charAt(2) - 49;
+            int x = in.charAt(0) - 49;
+            if (f.map.map[y][x] > 10 && f.map.map[y][x] < 19 && players[d.turn-1].knowQuestsLoc[f.map.map[y][x] - 11] && questNum == f.map.map[y][x] - 10) {
+                JOptionPane.showMessageDialog(null, "Successfully found quest!", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
+                changeMoney(100 + questNum * 100);
+                players[d.turn-1].questsFound[questNum-1] = true;
+                questNum++;
+                f.questPanel.changeQuestIcon((byte) questNum);
+                f.map.map[y][x] = 0;
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Wrong!", "Wrong!", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Try again!", "Wrong Input", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    private void setupCastleButton() {
+        Castle = new JButton(new ImageIcon("images\\CastleB.png"));
+        Castle.setBounds(1111, 330, 100, 100);
+        Castle.setEnabled(false);
+        Castle.setVisible(false);
+        Castle.addActionListener(e -> castleAction());
     }
     private void Fight(int p1,int p2){
         short x;
@@ -346,7 +352,6 @@ public class Game {
     private void GameLoop(byte playersCount) {
         d.turn = 1;
         f.playerTurn.setText("Turn: 1");
-        System.out.println("player1(x,y): " + players[d.turn-1].x + "  " + players[d.turn-1].y);
         d.dice.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -371,28 +376,22 @@ public class Game {
     void questDone() {
         questNum--;
     }
-    public byte getQuestNum() {
+    public int getQuestNum() {
         return questNum;
     }
     Game(byte playersCount) {
         random=new Random();
         scoreboard=new ScoreBoard();
         setupPlayers(playersCount);
-        LootDivide();
-        MarketDivide();
-        for (int i = 0 ; i<crossedPlace.length ; i++){
-            for (int j = 0 ; j<crossedPlace[i].length ; j++){
-                crossedPlace[i][j]=new JLabel(cross);
-                crossedPlace[i][j].setBounds(319 + j*(65), 67 + i*(65) , 65, 65);
-                crossedPlace[i][j].setOpaque(true);
-                crossedPlace[i][j].setVisible(false);
-                f.gameWindow.add(crossedPlace[i][j]);
-                f.jl.add(crossedPlace[i][j],JLayeredPane.MODAL_LAYER);
-            }
-        }
-        for (int j = 0; j < loots.length; j++) {
-            for (int k = 0; k < loots[j].length; k++) {
-                loots[j][k]=new JLabel();
+
+        for (int i = 0 ; i<f.map.crossedPlace.length ; i++){
+            for (int j = 0 ; j<f.map.crossedPlace[i].length ; j++){
+                f.map.crossedPlace[i][j]=new JLabel(cross);
+                f.map.crossedPlace[i][j].setBounds(318 + j*(65), 67 + i*(65) , 65, 65);
+                f.map.crossedPlace[i][j].setOpaque(false);
+                f.map.crossedPlace[i][j].setVisible(false);
+                f.gameWindow.add(f.map.crossedPlace[i][j]);
+                f.jl.add(f.map.crossedPlace[i][j],JLayeredPane.MODAL_LAYER);
             }
         }
 
@@ -411,20 +410,21 @@ public class Game {
                 FightTester(playersCount);
                 d.dice.setEnabled(true);
                 d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
-                System.out.println("player(x,y): "+players[d.turn-1].x+" "+players[d.turn-1].y);
                 f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
                 f.error.setBackground(Color.orange);
                 f.error.setText("Roll the dice!");
                 MovesLeft.setText("Roll the dice");
-                LootHider();
+                f.map.LootHider(d.turn-1);
+                checkCastleEnabled();
                 turnFinished();
-                LootShower();
-                f.hideCheckMarks();
+                f.map.LootShower(d.turn-1);
                 //f.showCheckMarks();
                 changeTurn.setEnabled(false);
                 changeTurn.setVisible(false);
-                for (int k = 0 ; NotePlaces[k][0]!=-2 || NotePlaces[k][1]!=-2 ; k++) {
-                    crossedPlace[NotePlaces[k][0]][NotePlaces[k][1]].setVisible(false);
+                for (int k = 0 ; k < 6 && NotePlaces[k][0]!=-2; k++) {
+                    if (NotePlaces[k][0] > -1 && NotePlaces[k][0] < 10 && NotePlaces[k][1] < 10 && NotePlaces[k][1] > -1) {
+                        f.map.crossedPlace[NotePlaces[k][0]][NotePlaces[k][1]].setVisible(false);
+                    }
                 }
             }
         });
@@ -462,6 +462,8 @@ public class Game {
         f.jl.add(icons[1], JLayeredPane.POPUP_LAYER);
         f.jl.add(changeTurn,JLayeredPane.MODAL_LAYER);
         correspondStats();
+        setupCastleButton();
+        f.jl.add(Castle, JLayeredPane.MODAL_LAYER);
         GameLoop(playersCount);
     }
 }
