@@ -138,6 +138,7 @@ public class Game {
                 case 2:
                     marketFrame.marketframe.setVisible(true);
                     f.gameWindow.setEnabled(false);
+                    break;
                 case 3:
                     if (!startRound) {
                         hitTrap();
@@ -291,7 +292,6 @@ public class Game {
         players = new Player[count]; //count
         for (byte i = 0; i < players.length; i++) {
             players[i] = new Player();
-            players[i].power = 1000;
             if (i==0 || i==2){
                 players[i].x=0;
                 players[i].y=10;
@@ -437,40 +437,32 @@ public class Game {
                 }
             }
         });
-        marketFrame.PowerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                marketFrame.marketframe.setVisible(false);
-                f.gameWindow.setEnabled(true);
-                f.gameWindow.setVisible(true);
-                players[d.turn - 1].power += 40;
-                players[d.turn-1].money-=50;
-                scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" power: "+players[d.turn-1].power);
-                scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
-            }
+        marketFrame.PowerButton.addActionListener(e -> {
+            players[d.turn - 1].power += 40;
+            players[d.turn-1].money-=50;
+            scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" power: "+players[d.turn-1].power);
+            scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
         });
-        marketFrame.QuestButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int quest=random.nextInt(8)+11;
-                for (int k = 0; k < j; k++) {
-                    if (quest==SaveRandomQuests[k]){
-                        quest=random.nextInt(8)+11;
-                        k=-1;
-                    }
+        marketFrame.QuestButton.addActionListener(e -> {
+            int quest=random.nextInt(8)+11;
+            for (int k = 0; k < j; k++) {
+                if (quest==SaveRandomQuests[k]){
+                    quest=random.nextInt(8)+11;
+                    k=-1;
                 }
-                SaveRandomQuests[j]=quest;
-                players[d.turn-1].knowQuestsLoc[countKnowQuestLoc[d.turn-1]]=true;
-                countKnowQuestLoc[d.turn-1]++;
-                //TODO show quest label
-                j++;
-                marketFrame.marketframe.setVisible(false);
-                f.gameWindow.setEnabled(true);
-                players[d.turn-1].money -= 250;
-                scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
             }
+            SaveRandomQuests[j]=quest;
+            players[d.turn-1].knowQuestsLoc[countKnowQuestLoc[d.turn-1]]=true;
+            countKnowQuestLoc[d.turn-1]++;
+            //TODO show quest label
+            j++;
+            players[d.turn-1].money -= 250;
+            scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
         });
-
+        marketFrame.Close.addActionListener(e -> {
+            f.gameWindow.setEnabled(true);
+            marketFrame.marketframe.setVisible(false);
+        });
 
         MovesLeft=new JLabel();
         MovesLeft.setBounds(75,435,100,30);
