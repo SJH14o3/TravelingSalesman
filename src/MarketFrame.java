@@ -34,6 +34,6 @@ public class MarketFrame {
 
         marketframe.add(PowerButton);
         marketframe.add(QuestButton);
-        marketframe.setVisible(true);
+        marketframe.setVisible(false);
     }
 }

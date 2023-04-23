@@ -8,7 +8,8 @@ public class Game {
     //map[x][y]==1==loot
     //map[x][y]==2==market
     private final int LootCash=70;
-    int i=0;
+    byte countKnowQuestLoc[]=new byte[4];
+    int i=0 , j=0;
     private Random random;
     private JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     Player[] players;
@@ -16,9 +17,10 @@ public class Game {
     ImageIcon cross=new ImageIcon("images\\cross.png");
     JLabel MovesLeft;
     JButton changeTurn, Castle;
-    int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}};
+    int[] SaveRandomQuests=new int[8] ;
+    int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}} ;
     GameWindow f=new GameWindow();
-    //MarketFrame marketFrame=new MarketFrame();
+    MarketFrame marketFrame=new MarketFrame();
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
     private int questNum = 1;
@@ -133,6 +135,9 @@ public class Game {
                 case 1:
                     lootFound();
                     break;
+                case 2:
+                    marketFrame.marketframe.setVisible(true);
+                    f.gameWindow.setEnabled(false);
                 case 3:
                     if (!startRound) {
                         hitTrap();
@@ -215,71 +220,71 @@ public class Game {
     }
     public void MovementActions(byte playersCount){
         i=0;
-            f.m.Left.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
-                            outOfMapError();
-                    } else if(!walls.checkWallLeft(players, d.turn) && d.DiceNumber>0) {
-                        hitWallError();
-                    }
-                    if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
-                        players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
-                        NotePlaces[i][0]=players[d.turn-1].x;
-                        NotePlaces[i][1]=players[d.turn-1].y+1;
-                        move();
+        f.m.Left.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
+                    outOfMapError();
+                } else if(!walls.checkWallLeft(players, d.turn) && d.DiceNumber>0) {
+                    hitWallError();
+                }
+                if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
+                    players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
+                    NotePlaces[i][0]=players[d.turn-1].x;
+                    NotePlaces[i][1]=players[d.turn-1].y+1;
+                    move();
 
-                    }
                 }
-            });
-            f.m.Right.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].y == 9 && d.DiceNumber>0) {
-                        outOfMapError();
-                    } else if (!walls.checkWallRight(players, d.turn) && d.DiceNumber>0) {
-                        hitWallError();
-                    }
-                    if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
-                        players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
-                        NotePlaces[i][0]=players[d.turn-1].x;
-                        NotePlaces[i][1]=players[d.turn-1].y-1;
-                        move();
-                    }
+            }
+        });
+        f.m.Right.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (players[d.turn-1].y == 9 && d.DiceNumber>0) {
+                    outOfMapError();
+                } else if (!walls.checkWallRight(players, d.turn) && d.DiceNumber>0) {
+                    hitWallError();
                 }
-            });
-            f.m.Up.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].x == 0 && d.DiceNumber>0) {
-                        outOfMapError();
-                    } else if(!walls.checkWallUp(players, d.turn) && d.DiceNumber>0) {
-                        hitWallError();
-                    }
-                    if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
-                        players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
-                        NotePlaces[i][0]=players[d.turn-1].x+1;
-                        NotePlaces[i][1]=players[d.turn-1].y;
-                        move();
-                    }
+                if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
+                    players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
+                    NotePlaces[i][0]=players[d.turn-1].x;
+                    NotePlaces[i][1]=players[d.turn-1].y-1;
+                    move();
                 }
-            });
-            f.m.Down.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (players[d.turn-1].x == 9 && d.DiceNumber>0) {
-                        outOfMapError();
-                    } else if (!walls.checkWallDown(players, d.turn) && d.DiceNumber>0) {
-                        hitWallError();
-                    }
-                    if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
-                        players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
-                        NotePlaces[i][0]=players[d.turn-1].x-1;
-                        NotePlaces[i][1]=players[d.turn-1].y;
-                        move();
-                    }
+            }
+        });
+        f.m.Up.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (players[d.turn-1].x == 0 && d.DiceNumber>0) {
+                    outOfMapError();
+                } else if(!walls.checkWallUp(players, d.turn) && d.DiceNumber>0) {
+                    hitWallError();
                 }
-            });
+                if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
+                    players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
+                    NotePlaces[i][0]=players[d.turn-1].x+1;
+                    NotePlaces[i][1]=players[d.turn-1].y;
+                    move();
+                }
+            }
+        });
+        f.m.Down.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (players[d.turn-1].x == 9 && d.DiceNumber>0) {
+                    outOfMapError();
+                } else if (!walls.checkWallDown(players, d.turn) && d.DiceNumber>0) {
+                    hitWallError();
+                }
+                if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
+                    players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
+                    NotePlaces[i][0]=players[d.turn-1].x-1;
+                    NotePlaces[i][1]=players[d.turn-1].y;
+                    move();
+                }
+            }
+        });
     }
 
     private void setupPlayers(byte count) {
@@ -384,6 +389,10 @@ public class Game {
         scoreboard=new ScoreBoard();
         setupPlayers(playersCount);
 
+        for (int k = 0; k < countKnowQuestLoc.length; k++) {
+            countKnowQuestLoc[k]=0;
+        }
+
         for (int i = 0 ; i<f.map.crossedPlace.length ; i++){
             for (int j = 0 ; j<f.map.crossedPlace[i].length ; j++){
                 f.map.crossedPlace[i][j]=new JLabel(cross);
@@ -428,23 +437,39 @@ public class Game {
                 }
             }
         });
-//        marketFrame.PowerButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                marketFrame.marketframe.setVisible(false);
-//                f.gameWindow.setEnabled(true);
-//                players[d.turn - 1].power += 40;
-//                players[d.turn-1].money-=50;
-//                scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" power: "+players[d.turn-1].power);
-//                scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
-//            }
-//        });
-//        marketFrame.QuestButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//            }
-//        });
+        marketFrame.PowerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                marketFrame.marketframe.setVisible(false);
+                f.gameWindow.setEnabled(true);
+                f.gameWindow.setVisible(true);
+                players[d.turn - 1].power += 40;
+                players[d.turn-1].money-=50;
+                scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" power: "+players[d.turn-1].power);
+                scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+            }
+        });
+        marketFrame.QuestButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int quest=random.nextInt(8)+11;
+                for (int k = 0; k < j; k++) {
+                    if (quest==SaveRandomQuests[k]){
+                        quest=random.nextInt(8)+11;
+                        k=-1;
+                    }
+                }
+                SaveRandomQuests[j]=quest;
+                players[d.turn-1].knowQuestsLoc[countKnowQuestLoc[d.turn-1]]=true;
+                countKnowQuestLoc[d.turn-1]++;
+                //TODO show quest label
+                j++;
+                marketFrame.marketframe.setVisible(false);
+                f.gameWindow.setEnabled(true);
+                players[d.turn-1].money -= 250;
+                scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+            }
+        });
 
 
         MovesLeft=new JLabel();
