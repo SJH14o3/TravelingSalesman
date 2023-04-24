@@ -10,6 +10,7 @@ public class Game {
     private final int LootCash=70;
     byte countKnowQuestLoc[]=new byte[4];
     int i=0 , j=0;
+    byte[] questLocCount={0,0,0,0};
     private Random random;
     private JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     Player[] players;
@@ -78,6 +79,24 @@ public class Game {
                     Fight(i,j);
                     return;
                 }
+            }
+        }
+    }
+    private void FindQuest(int quest){
+        boolean QuestFound=false;
+        int x=0,y=0;
+        while (QuestFound==false){
+            if (f.map.map[x][y]==quest){
+                QuestFound=true;
+                players[d.turn-1].questLoc[questLocCount[d.turn-1]][0]= (byte) x;
+                players[d.turn-1].questLoc[questLocCount[d.turn-1]][1]=(byte) y;
+            }
+            if (y<9){
+                y++;
+            }
+            else {
+                y=0;
+                x++;
             }
         }
     }
@@ -427,6 +446,9 @@ public class Game {
                 checkCastleEnabled();
                 turnFinished();
                 f.map.LootShower(d.turn-1);
+///////////////////////////////////////////////////////////////////////////////////                for (int k = 0; ; k++) {
+//                    setvisible label for treasure
+//                }
                 //f.showCheckMarks();
                 changeTurn.setEnabled(false);
                 changeTurn.setVisible(false);
@@ -438,30 +460,44 @@ public class Game {
             }
         });
         marketFrame.PowerButton.addActionListener(e -> {
-            players[d.turn - 1].power += 40;
-            players[d.turn-1].money-=50;
-            scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" power: "+players[d.turn-1].power);
-            scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+            if (players[d.turn-1].money>=50) {
+                players[d.turn - 1].power += 40;
+                players[d.turn - 1].money -= 50;
+                scoreboard.Power[d.turn - 1].setText(players[d.turn - 1].getName() + " power: " + players[d.turn - 1].power);
+                scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+            }
+            else {
+                marketFrame.errorInfo.setText("can't buy power!you need more money.");
+            }
         });
         marketFrame.QuestButton.addActionListener(e -> {
-            int quest=random.nextInt(8)+11;
-            for (int k = 0; k < j; k++) {
-                if (quest==SaveRandomQuests[k]){
-                    quest=random.nextInt(8)+11;
-                    k=-1;
+            if (countKnowQuestLoc[d.turn-1]<8 && players[d.turn-1].money>=250) {
+                int quest = random.nextInt(8) + 11;
+                for (int k = 0; k < j; k++) {
+                    if (quest == SaveRandomQuests[k]) {
+                        quest = random.nextInt(8) + 11;
+                        k = -1;
+                    }
                 }
+                SaveRandomQuests[j] = quest;
+                players[d.turn - 1].knowQuestsLoc[countKnowQuestLoc[d.turn - 1]] = true;
+                FindQuest(quest);
+                countKnowQuestLoc[d.turn - 1]++;
+                //TODO show quest label
+                j++;
+                players[d.turn - 1].money -= 250;
+                scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
             }
-            SaveRandomQuests[j]=quest;
-            players[d.turn-1].knowQuestsLoc[countKnowQuestLoc[d.turn-1]]=true;
-            countKnowQuestLoc[d.turn-1]++;
-            //TODO show quest label
-            j++;
-            players[d.turn-1].money -= 250;
-            scoreboard.Money[d.turn-1].setText(players[d.turn-1].getName()+" money: "+players[d.turn-1].money);
+            else if(countKnowQuestLoc[d.turn-1]>=8){
+                marketFrame.errorInfo.setText("you know all of quest locations");
+            } else if (players[d.turn-1].money<250) {
+                marketFrame.errorInfo.setText("can't buy!you need more money");
+            }
         });
         marketFrame.Close.addActionListener(e -> {
             f.gameWindow.setEnabled(true);
             marketFrame.marketframe.setVisible(false);
+            marketFrame.errorInfo.setText(":-)");
         });
 
         MovesLeft=new JLabel();
