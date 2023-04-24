@@ -4,7 +4,7 @@ import java.awt.*;
 public class ScoreBoard {
     public JFrame scoreboard;
     public JLabel[] Money=new JLabel[4],Power=new JLabel[4];
-    private Font font=new Font("Comic Sans MS", Font.PLAIN,13);
+    private Font font=new Font("Comic Sans MS", Font.BOLD,11);
     ScoreBoard(){
         scoreboard=new JFrame("Score Board");
         scoreboard.setBounds(0,0,250,300);

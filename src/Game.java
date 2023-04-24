@@ -17,7 +17,8 @@ public class Game {
     ScoreBoard scoreboard;
     ImageIcon cross=new ImageIcon("images\\cross.png");
     JLabel MovesLeft;
-    JButton changeTurn, Castle;
+    JOptionPane FightWinner;
+    JButton changeTurn, Castle, OpenMarket;
     int[] SaveRandomQuests=new int[8] ;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}} ;
     GameWindow f=new GameWindow();
@@ -25,7 +26,14 @@ public class Game {
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
     private int questNum = 1;
-    private void MarketWork(){
+    void makeFightFrame(int p){
+        FightWinner=new JOptionPane();
+        FightWinner.setBounds(730,330,400,250);
+        JOptionPane.showMessageDialog(null,players[p].getName()+" won the fight!" , "Fight result", JOptionPane.INFORMATION_MESSAGE);
+        FightWinner.setVisible(true);
+        FightWinner.setEnabled(true);
+        FightWinner.setOpaque(true);
+        FightWinner.setLayout(null);
 
     }
     boolean CheckNotePlaces(String direction){
@@ -151,12 +159,16 @@ public class Game {
     private void checkLocation(boolean startRound) {
         if (players[d.turn-1].x > -1 && players[d.turn-1].y > -1 && players[d.turn-1].y < 10 && players[d.turn-1].x < 10) {
             switch(f.map.map[players[d.turn-1].x][players[d.turn-1].y]) {
+                case 0:
+                    OpenMarket.setEnabled(false);
+                    OpenMarket.setVisible(false);
+                    break;
                 case 1:
                     lootFound();
                     break;
                 case 2:
-                    marketFrame.marketframe.setVisible(true);
-                    f.gameWindow.setEnabled(false);
+                    OpenMarket.setVisible(true);
+                    OpenMarket.setEnabled(true);
                     break;
                 case 3:
                     if (!startRound) {
@@ -329,8 +341,8 @@ public class Game {
     private void castleAction() {
         String in = JOptionPane.showInputDialog("Enter Quest Location");
         if (in.charAt(0) >= 49 && in.charAt(0) <= 57 && in.charAt(1) == ' ' && in.charAt(2) >= 49 && in.charAt(2) <= 57 ) {
-            int y = in.charAt(2) - 49;
-            int x = in.charAt(0) - 49;
+            int x = in.charAt(2) - 49;
+            int y = in.charAt(0) - 49;
             if (f.map.map[y][x] > 10 && f.map.map[y][x] < 19 && players[d.turn-1].knowQuestsLoc[f.map.map[y][x] - 11] && questNum == f.map.map[y][x] - 10) {
                 JOptionPane.showMessageDialog(null, "Successfully found quest!", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
                 changeMoney(100 + questNum * 100);
@@ -362,6 +374,10 @@ public class Game {
             players[p1].money+=x;
             players[p2].money-=x;
             players[p1].power= (short) (players[p1].power-players[p2].power);
+            players[p2].x=9;
+            players[p2].y=-1;
+            updateIcon(p2);
+            makeFightFrame(p1);
             scoreboard.Money[p1].setText(players[p1].getName()+" money: "+players[p1].money);
             scoreboard.Power[p1].setText(players[p1].getName()+" power: "+players[p1].power);
             scoreboard.Money[p2].setText(players[p2].getName()+" money: "+players[p2].money);
@@ -370,6 +386,10 @@ public class Game {
             players[p2].money+=x;
             players[p1].money-=x;
             players[p2].power= (short) (players[p2].power-players[p1].power);
+            players[p1].x=0;
+            players[p1].y=10;
+            updateIcon(p1);
+            makeFightFrame(p2);
             scoreboard.Money[p1].setText(players[p1].getName()+" money: "+players[p1].money);
             scoreboard.Money[p2].setText(players[p2].getName()+" money: "+players[p2].money);
             scoreboard.Power[p2].setText(players[p2].getName()+" power: "+players[p2].power);
@@ -408,6 +428,7 @@ public class Game {
     Game(byte playersCount) {
         random=new Random();
         scoreboard=new ScoreBoard();
+        OpenMarket=new JButton(new ImageIcon("images\\marketB.png"));
         setupPlayers(playersCount);
 
         for (int k = 0; k < countKnowQuestLoc.length; k++) {
@@ -424,6 +445,19 @@ public class Game {
                 f.jl.add(f.map.crossedPlace[i][j],JLayeredPane.MODAL_LAYER);
             }
         }
+
+        OpenMarket.setBounds(1111,330,100,100);
+        OpenMarket.setVisible(false);
+        OpenMarket.setEnabled(false);
+        OpenMarket.setOpaque(true);
+        OpenMarket.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                marketFrame.marketframe.setVisible(true);
+                marketFrame.marketframe.setEnabled(true);
+                f.gameWindow.setEnabled(false);
+            }
+        });
 
         changeTurn=new JButton("Tap to change turn");
         changeTurn.setBounds(55,480,150,100);
@@ -466,6 +500,7 @@ public class Game {
             if (players[d.turn-1].money>=50) {
                 players[d.turn - 1].power += 40;
                 players[d.turn - 1].money -= 50;
+                marketFrame.errorInfo.setText("you got (+40) power.");
                 scoreboard.Power[d.turn - 1].setText(players[d.turn - 1].getName() + " power: " + players[d.turn - 1].power);
                 scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
             }
@@ -487,10 +522,10 @@ public class Game {
                 f.map.toggleQuestLoc(players[d.turn-1], false);
                 //FindQuest(quest);
                 countKnowQuestLoc[d.turn - 1]++;
-                //TODO show quest label
                 j++;
                 players[d.turn - 1].money -= 250;
                 scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+                marketFrame.errorInfo.setText("you got one of treasure locations.");
             }
             else if(countKnowQuestLoc[d.turn-1]>=8){
                 marketFrame.errorInfo.setText("you know all of quest locations");
@@ -521,6 +556,7 @@ public class Game {
         correspondStats();
         setupCastleButton();
         f.jl.add(Castle, JLayeredPane.MODAL_LAYER);
+        f.jl.add(OpenMarket,JLayeredPane.MODAL_LAYER);
         GameLoop(playersCount);
     }
 }
