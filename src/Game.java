@@ -7,7 +7,7 @@ import java.util.Random;
 public class Game {
     //map[x][y]==1==loot
     //map[x][y]==2==market
-    private final int LootCash=1000;
+    private final int LootCash=70;
     byte countKnowQuestLoc[]=new byte[4];
     int i=0 , j=0;
     byte[] questLocCount={0,0,0,0};
@@ -385,7 +385,6 @@ public class Game {
                 f.error.setBackground(Color.GREEN);
                 f.error.setText("Go!");
                 d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
-                d.DiceNumber = 6;
                 d.setTarget(d.DiceNumber);
                 d.dice.setIcon(new ImageIcon(d.target));
                 d.dice.setEnabled(false);
