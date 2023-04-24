@@ -449,6 +449,7 @@ public class Game {
 ///////////////////////////////////////////////////////////////////////////////////                for (int k = 0; ; k++) {
 //                    setvisible label for treasure
 //                }
+
                 //f.showCheckMarks();
                 changeTurn.setEnabled(false);
                 changeTurn.setVisible(false);
@@ -481,7 +482,7 @@ public class Game {
                 }
                 SaveRandomQuests[j] = quest;
                 players[d.turn - 1].knowQuestsLoc[countKnowQuestLoc[d.turn - 1]] = true;
-                FindQuest(quest);
+                //FindQuest(quest);
                 countKnowQuestLoc[d.turn - 1]++;
                 //TODO show quest label
                 j++;

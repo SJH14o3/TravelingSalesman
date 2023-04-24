@@ -16,6 +16,11 @@ public class Player {
         return name;
     }
     Player() {
+        for (int i = 0; i < questLoc.length; i++) {
+            for (int j = 0; j < questLoc[i].length; j++) {
+                questLoc[i][j]=-2;
+            }
+        }
         count++;
         setName();
     }
