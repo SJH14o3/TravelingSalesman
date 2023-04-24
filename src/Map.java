@@ -11,6 +11,7 @@ public class Map extends JPanel {
     JLabel[][] crossedPlace=new JLabel[10][10];
     JLabel[] markets=new JLabel[5];
     JLabel[][] loots=new JLabel[13][2];
+    JLabel[] treasureLoc = new JLabel[8];
 
     private class Trap {
         int x;
@@ -29,13 +30,27 @@ public class Map extends JPanel {
     Trap[] traps;
     private void setupTreasures() { //Temporarily will be manual.
         map[1][2] = 11;
+        setupTreasureLabel(2, 1, 0);
         map[1][5] = 12;
+        setupTreasureLabel(5, 1, 1);
         map[3][5] = 13;
+        setupTreasureLabel(5, 3, 2);
         map[4][8] = 14;
+        setupTreasureLabel(8, 4, 3);
         map[5][1] = 15;
+        setupTreasureLabel(1, 5, 4);
         map[6][5] = 16;
+        setupTreasureLabel(5, 6, 5);
         map[8][2] = 17;
+        setupTreasureLabel(2, 8, 6);
         map[8][8] = 18;
+        setupTreasureLabel(8, 8, 7);
+    }
+    private void setupTreasureLabel(int x, int y, int count) {
+        treasureLoc[count] = new JLabel(new ImageIcon("images\\quest.png"));
+        treasureLoc[count].setBounds(27 + x*(65), 27 + y*(65) , 65, 65);
+        treasureLoc[count].setVisible(false);
+        add(treasureLoc[count]);
     }
     public void markTrap(int x, int y, int turn) {
         for (int i = 0; i < traps.length; i++) {
