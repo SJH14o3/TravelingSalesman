@@ -46,6 +46,16 @@ public class Map extends JPanel {
         map[8][8] = 18;
         setupTreasureLabel(8, 8, 7);
     }
+    public void toggleQuestLoc(Player p, boolean nextTurn) {
+        for (int i = 0; i < p.knowQuestsLoc.length; i++) {
+            if (treasureLoc[i].isVisible() && nextTurn) {
+                treasureLoc[i].setVisible(false);
+            }
+            if (p.knowQuestsLoc[i] && !treasureLoc[i].isVisible()) {
+                treasureLoc[i].setVisible(true);
+            }
+        }
+    }
     private void setupTreasureLabel(int x, int y, int count) {
         treasureLoc[count] = new JLabel(new ImageIcon("images\\quest.png"));
         treasureLoc[count].setBounds(27 + x*(65), 27 + y*(65) , 65, 65);

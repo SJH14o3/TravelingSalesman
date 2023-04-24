@@ -7,7 +7,7 @@ import java.util.Random;
 public class Game {
     //map[x][y]==1==loot
     //map[x][y]==2==market
-    private final int LootCash=70;
+    private final int LootCash=1000;
     byte countKnowQuestLoc[]=new byte[4];
     int i=0 , j=0;
     byte[] questLocCount={0,0,0,0};
@@ -177,6 +177,7 @@ public class Game {
                 case 18:
                     if (!players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11]) {
                         players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11] = true;
+                        f.map.toggleQuestLoc(players[d.turn-1], false);
                         f.questFound(f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11);
                     }
                     break;
@@ -224,6 +225,7 @@ public class Game {
         }
         icons[d.turn-1].setVisible(true);
         f.map.showTraps(d.turn-1);
+        f.map.toggleQuestLoc(players[d.turn-1], true);
         correspondStats();
         checkLocation(true);
         i = 0;
@@ -325,7 +327,6 @@ public class Game {
         }
     }
     private void castleAction() {
-        System.out.println("CASTLE!");
         String in = JOptionPane.showInputDialog("Enter Quest Location");
         if (in.charAt(0) >= 49 && in.charAt(0) <= 57 && in.charAt(1) == ' ' && in.charAt(2) >= 49 && in.charAt(2) <= 57 ) {
             int y = in.charAt(2) - 49;
@@ -333,6 +334,7 @@ public class Game {
             if (f.map.map[y][x] > 10 && f.map.map[y][x] < 19 && players[d.turn-1].knowQuestsLoc[f.map.map[y][x] - 11] && questNum == f.map.map[y][x] - 10) {
                 JOptionPane.showMessageDialog(null, "Successfully found quest!", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
                 changeMoney(100 + questNum * 100);
+                f.map.treasureLoc[questNum-1].setIcon(new ImageIcon("images\\foundQuest.png"));
                 players[d.turn-1].questsFound[questNum-1] = true;
                 questNum++;
                 f.questPanel.changeQuestIcon((byte) questNum);
@@ -383,6 +385,7 @@ public class Game {
                 f.error.setBackground(Color.GREEN);
                 f.error.setText("Go!");
                 d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
+                d.DiceNumber = 6;
                 d.setTarget(d.DiceNumber);
                 d.dice.setIcon(new ImageIcon(d.target));
                 d.dice.setEnabled(false);
@@ -482,6 +485,7 @@ public class Game {
                 }
                 SaveRandomQuests[j] = quest;
                 players[d.turn - 1].knowQuestsLoc[countKnowQuestLoc[d.turn - 1]] = true;
+                f.map.toggleQuestLoc(players[d.turn-1], false);
                 //FindQuest(quest);
                 countKnowQuestLoc[d.turn - 1]++;
                 //TODO show quest label
