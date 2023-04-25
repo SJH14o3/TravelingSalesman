@@ -28,23 +28,49 @@ public class Map extends JPanel {
         }
     }
     Trap[] traps;
-    private void setupTreasures() { //Temporarily will be manual.
-        map[1][2] = 11;
-        setupTreasureLabel(2, 1, 0);
-        map[1][5] = 12;
-        setupTreasureLabel(5, 1, 1);
-        map[3][5] = 13;
-        setupTreasureLabel(5, 3, 2);
-        map[4][8] = 14;
-        setupTreasureLabel(8, 4, 3);
-        map[5][1] = 15;
-        setupTreasureLabel(1, 5, 4);
-        map[6][5] = 16;
-        setupTreasureLabel(5, 6, 5);
-        map[8][2] = 17;
-        setupTreasureLabel(2, 8, 6);
-        map[8][8] = 18;
-        setupTreasureLabel(8, 8, 7);
+    private boolean checkAround(int x, int y) {
+        if (x > 0) {
+            if (y > 0 && map[x-1][y-1] == 3) return false;
+            if (y < 9 && map[x-1][y+1] == 3) return false;
+            if (map[x-1][y] == 3) return false;
+        }
+        if (x < 9) {
+            if (y > 0 && map[x+1][y-1] == 3) return false;
+            if (y < 9 && map[x+1][y+1] == 3) return false;
+            if (map[x+1][y] == 3) return false;
+        }
+        if (y > 0 && map[x][y-1] == 3) return false;
+        if (y < 9 && map[x][y+1] == 3) return false;
+        return true;
+    }
+    private int whatQuadron(int x, int y) {
+        if (x < 5 && y < 5) return 0;
+        else if (x < 5) return 1;
+        else if (y < 5) return 2;
+        return 3;
+    }
+    private boolean checkAroundTreasure(int x, int y) {
+        for (int i = x - 1; i < x + 2; i++) {
+            for (int j = y - 1; j < y + 2; j++) {
+                if (map[j][i] != 0) return true;
+            }
+        }
+        return false;
+    }
+    private void setupTreasures() {
+        int[] quadron = new int[4];
+        int x, y, q;
+        Random rng = new Random();
+        for(int i =0; i < 8; i++) {
+            do {
+                x = rng.nextInt(8) + 1;
+                y = rng.nextInt(8) + 1;
+                q = whatQuadron(x, y);
+            } while(quadron[q] == 2 || checkAroundTreasure(x, y));
+            map[y][x] = i + 11;
+            quadron[q]++;
+            setupTreasureLabel(x, y, i);
+        }
     }
     public void toggleQuestLoc(Player p, boolean nextTurn) {
         for (int i = 0; i < p.knowQuestsLoc.length; i++) {
@@ -59,7 +85,7 @@ public class Map extends JPanel {
     private void setupTreasureLabel(int x, int y, int count) {
         treasureLoc[count] = new JLabel(new ImageIcon("images\\quest.png"));
         treasureLoc[count].setBounds(27 + x*(65), 27 + y*(65) , 65, 65);
-        treasureLoc[count].setVisible(false);
+        treasureLoc[count].setVisible(true);
         add(treasureLoc[count]);
     }
     public void markTrap(int x, int y, int turn) {
@@ -86,9 +112,11 @@ public class Map extends JPanel {
         }
     }
     private void setCastle() {
-        int x = random.nextInt(2);
-        int y = random.nextInt(2);
-        //x = y = 0;
+        int x, y;
+        do {
+            x = random.nextInt(2);
+            y = random.nextInt(2);
+        } while (!isEmpty(x, y));
         map[x+4][y+4] = 4;
         JLabel castle = new JLabel(new ImageIcon("images\\castle.png"));
         castle.setBounds(287 + y*65, 287 + x*65, 65, 65);
@@ -105,21 +133,6 @@ public class Map extends JPanel {
         }
         return false;
     }
-    private boolean checkTrapLoc(int x, int y) {
-        if (x > 0) {
-            if (y > 0 && map[x-1][y-1] == 3) return false;
-            if (y < 9 && map[x-1][y+1] == 3) return false;
-            if (map[x-1][y] == 3) return false;
-        }
-        if (x < 9) {
-            if (y > 0 && map[x+1][y-1] == 3) return false;
-            if (y < 9 && map[x+1][y+1] == 3) return false;
-            if (map[x+1][y] == 3) return false;
-        }
-        if (y > 0 && map[x][y-1] == 3) return false;
-        if (y < 9 && map[x][y+1] == 3) return false;
-        return true;
-    }
     private void setTraps() {
         int count = random.nextInt(4) + 5;
         System.out.println("Traps count: " + count);
@@ -129,7 +142,7 @@ public class Map extends JPanel {
             do {
                 x = random.nextInt(10);
                 y = random.nextInt(10);
-            } while(!checkTrapLoc(x, y) || !isEmpty(x, y));
+            } while(!checkAround(x, y) || !isEmpty(x, y));
             map[x][y] = 3;
             traps[i] = new Trap(y, x);
         }
@@ -225,8 +238,8 @@ public class Map extends JPanel {
         border.setBounds(0, 0, 704, 704);
         border.setVisible(true);
         setupCrossPlaces();
-        setCastle();
         setupTreasures();
+        setCastle();
         setTraps();
         MarketDivide();
         setupLoots();
