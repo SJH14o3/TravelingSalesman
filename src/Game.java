@@ -114,6 +114,12 @@ public class Game {
             Castle.setEnabled(false);
         }
     }
+    private void checkMarketEnabled() {
+        if (OpenMarket.isEnabled()) {
+            OpenMarket.setVisible(false);
+            OpenMarket.setEnabled(false);
+        }
+    }
     private void changeMoney(int in) {
         players[d.turn-1].money += in;
         f.updateCoinCount(players[d.turn-1].money);
@@ -139,11 +145,20 @@ public class Game {
         changePower(-players[d.turn-1].power/10);
     }
     private void hitTrap() {
-        if (players[d.turn-1].money < 100) {
+        boolean mode = true;
+        if (players[d.turn-1].money < 50 && players[d.turn-1].power > 20) {
             trapPower();
         }
-        else if (players[d.turn-1].power < 50) {
+        else if (players[d.turn-1].power < 20 && players[d.turn-1].money > 50) {
             trapMoney();
+        }
+        else if (players[d.turn-1].power < 20 && players[d.turn-1].money < 50) {
+            mode = false;
+            f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+            killPlayer(d.turn-1, (short) 0);
+            JOptionPane.showMessageDialog(null, "You stepped on a trap, without having\nenough money and power. so you died!", "Trap killed You", JOptionPane.ERROR_MESSAGE);
+            d.DiceNumber = 0;
+            waitForChangeTurn();
         }
         else {
             int r = random.nextInt(2);
@@ -154,15 +169,13 @@ public class Game {
                 trapPower();
             }
         }
-        f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+        if (mode) {
+            f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+        }
     }
     private void checkLocation(boolean startRound) {
         if (players[d.turn-1].x > -1 && players[d.turn-1].y > -1 && players[d.turn-1].y < 10 && players[d.turn-1].x < 10) {
             switch(f.map.map[players[d.turn-1].x][players[d.turn-1].y]) {
-                case 0:
-                    OpenMarket.setEnabled(false);
-                    OpenMarket.setVisible(false);
-                    break;
                 case 1:
                     lootFound();
                     break;
@@ -196,8 +209,16 @@ public class Game {
             }
         }
     }
+    private void waitForChangeTurn() {
+        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+        f.error.setBackground(Color.red);
+        f.error.setText("Change the turn!");
+        changeTurn.setEnabled(true);
+        changeTurn.setVisible(true);
+    }
     private void move() {
         checkCastleEnabled();
+        checkMarketEnabled();
         f.error.setBackground(Color.green);
         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
         f.error.setText("Go!");
@@ -210,11 +231,7 @@ public class Game {
         i++;
         checkLocation(false);
         if (d.DiceNumber==0){
-            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-            f.error.setBackground(Color.red);
-            f.error.setText("Change the turn!");
-            changeTurn.setEnabled(true);
-            changeTurn.setVisible(true);
+            waitForChangeTurn();
         }
     }
     private void updateIcon(int i) {
@@ -367,32 +384,48 @@ public class Game {
         Castle.setVisible(false);
         Castle.addActionListener(e -> castleAction());
     }
+    private void killPlayer(int p, short money) {
+        players[p].money-=money;
+        players[p].power=0;
+        if (p == 0) {
+            players[p].x = 0;
+            players[p].y = 10;
+        }
+        else {
+            players[p].x = 9;
+            players[p].y = -1;
+        }
+        updateIcon(p);
+        scoreboard.Money[p].setText(players[p].getName()+" money: "+players[p].money);
+        scoreboard.Power[p].setText(players[p].getName()+" power: "+players[p].power);
+    }
+    private void FightStats(int winner, int loser) {
+        short x;
+        if (players[winner].power+players[loser].power == 0) {
+            x = (short) 0;
+        }
+        else {
+            x = (short) (((players[winner].power-players[loser].power)*players[loser].money)/(players[winner].power+players[loser].power));
+        }
+        killPlayer(loser, x);
+        players[winner].money+=x;
+        players[winner].power= (short) (players[winner].power-players[loser].power);
+        makeFightFrame(winner);
+        scoreboard.Money[winner].setText(players[winner].getName()+" money: "+players[winner].money);
+        scoreboard.Power[winner].setText(players[winner].getName()+" power: "+players[winner].power);
+    }
     private void Fight(int p1,int p2){
         short x;
         if (players[p1].power>players[p2].power){
-            x=(short) (((players[p1].power-players[p2].power)*players[p2].money)/(players[p1].power+players[p2].power));
-            players[p1].money+=x;
-            players[p2].money-=x;
-            players[p1].power= (short) (players[p1].power-players[p2].power);
-            players[p2].x=9;
-            players[p2].y=-1;
-            updateIcon(p2);
-            makeFightFrame(p1);
-            scoreboard.Money[p1].setText(players[p1].getName()+" money: "+players[p1].money);
-            scoreboard.Power[p1].setText(players[p1].getName()+" power: "+players[p1].power);
-            scoreboard.Money[p2].setText(players[p2].getName()+" money: "+players[p2].money);
+            FightStats(p1, p2);
         } else if (players[p1].power<players[p2].power) {
-            x=(short) (((players[p2].power-players[p1].power)*players[p1].money)/(players[p1].power+players[p2].power));
-            players[p2].money+=x;
-            players[p1].money-=x;
-            players[p2].power= (short) (players[p2].power-players[p1].power);
-            players[p1].x=0;
-            players[p1].y=10;
-            updateIcon(p1);
-            makeFightFrame(p2);
-            scoreboard.Money[p1].setText(players[p1].getName()+" money: "+players[p1].money);
-            scoreboard.Money[p2].setText(players[p2].getName()+" money: "+players[p2].money);
-            scoreboard.Power[p2].setText(players[p2].getName()+" power: "+players[p2].power);
+            FightStats(p2, p1);
+        }
+        else {
+            if (d.turn-1 == p1) {
+                FightStats(p1, p2);
+            }
+            else FightStats(p2, p1);
         }
     }
     private void GameLoop(byte playersCount) {
@@ -480,6 +513,7 @@ public class Game {
                 MovesLeft.setText("Roll the dice");
                 f.map.LootHider(d.turn-1);
                 checkCastleEnabled();
+                checkMarketEnabled();
                 turnFinished();
                 f.map.LootShower(d.turn-1);
 ///////////////////////////////////////////////////////////////////////////////////                for (int k = 0; ; k++) {

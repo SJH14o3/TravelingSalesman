@@ -89,7 +89,7 @@ public class GameWindow{
         coins.setBounds(315, 28, 36, 36);
         jl.add(coins, JLayeredPane.MODAL_LAYER);
         coinsCount = new JLabel();
-        coinsCount.setBounds(350, 30, 50, 30);
+        coinsCount.setBounds(350, 30, 70, 30);
         coinsCount.setHorizontalAlignment(SwingConstants.LEFT);
         coinsCount.setForeground(new Color(0xFFFFFF));
         coinsCount.setFont(new Font("Gill Sans MT Condensed", Font.BOLD, 25));

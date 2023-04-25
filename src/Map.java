@@ -28,19 +28,19 @@ public class Map extends JPanel {
         }
     }
     Trap[] traps;
-    private boolean checkAround(int x, int y) {
+    private boolean checkAround(int x, int y, int in) {
         if (x > 0) {
-            if (y > 0 && map[x-1][y-1] == 3) return false;
-            if (y < 9 && map[x-1][y+1] == 3) return false;
-            if (map[x-1][y] == 3) return false;
+            if (y > 0 && map[x-1][y-1] == in) return false;
+            if (y < 9 && map[x-1][y+1] == in) return false;
+            if (map[x-1][y] == in) return false;
         }
         if (x < 9) {
-            if (y > 0 && map[x+1][y-1] == 3) return false;
-            if (y < 9 && map[x+1][y+1] == 3) return false;
-            if (map[x+1][y] == 3) return false;
+            if (y > 0 && map[x+1][y-1] == in) return false;
+            if (y < 9 && map[x+1][y+1] == in) return false;
+            if (map[x+1][y] == in) return false;
         }
-        if (y > 0 && map[x][y-1] == 3) return false;
-        if (y < 9 && map[x][y+1] == 3) return false;
+        if (y > 0 && map[x][y-1] == in) return false;
+        if (y < 9 && map[x][y+1] == in) return false;
         return true;
     }
     private int whatQuadron(int x, int y) {
@@ -116,7 +116,7 @@ public class Map extends JPanel {
         do {
             x = random.nextInt(2);
             y = random.nextInt(2);
-        } while (!isEmpty(x, y));
+        } while (!isEmpty(x+4, y+4));
         map[x+4][y+4] = 4;
         JLabel castle = new JLabel(new ImageIcon("images\\castle.png"));
         castle.setBounds(287 + y*65, 287 + x*65, 65, 65);
@@ -142,7 +142,7 @@ public class Map extends JPanel {
             do {
                 x = random.nextInt(10);
                 y = random.nextInt(10);
-            } while(!checkAround(x, y) || !isEmpty(x, y));
+            } while(!checkAround(x, y, 3) || !isEmpty(x, y));
             map[x][y] = 3;
             traps[i] = new Trap(y, x);
         }
@@ -163,20 +163,22 @@ public class Map extends JPanel {
         for (int j=x=y=0 ; j< markets.length ; j++) {
             do {
                 if (j==0) {
-                    x = random.nextInt(5);
-                    y = random.nextInt(5);
+                    x = random.nextInt(4);
+                    y = random.nextInt(4);
                 } else if (j==1) {
-                    x = random.nextInt(5);
-                    y = random.nextInt(5)+5;
+                    x = random.nextInt(4);
+                    y = random.nextInt(4)+6;
                 } else if (j==2) {
-                    x = random.nextInt(5)+5;
-                    y = random.nextInt(5);
+                    x = random.nextInt(4)+6;
+                    y = random.nextInt(4);
                 } else if (j==3) {
-                    x = random.nextInt(5)+5;
-                    y = random.nextInt(5)+5;
+                    x = random.nextInt(4)+6;
+                    y = random.nextInt(4)+6;
                 } else if (j==4) {
-                    x = random.nextInt(10);
-                    y = random.nextInt(10);
+                    do {
+                        x = random.nextInt(10);
+                        y = random.nextInt(10);
+                    } while (!checkAround(x, y, 2));
                 }
             } while(!isEmpty(x, y));
             map[x][y] = 2;
