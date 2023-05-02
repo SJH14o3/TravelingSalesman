@@ -2,21 +2,16 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Game extends Sound{
-    //map[x][y]==1==loot
-    //map[x][y]==2==market
-    private final int LootCash=70;
-    private boolean[] canMove = {true, true, true, true};
-    byte countKnowQuestLoc[]=new byte[4];
-    int i=0 , j=0;
-    byte[] questLocCount={0,0,0,0};
-    private Random random;
-    private JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
+    private final boolean[] canMove = {true, true, true, true};
+    byte[] countKnowQuestLoc=new byte[4];
+    int i=0;
+    private final Random random;
+    private final JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     Player[] players;
     ScoreBoard scoreboard;
     ImageIcon cross=new ImageIcon("images\\cross.png");
@@ -41,48 +36,49 @@ public class Game extends Sound{
 
     }
     boolean CheckNotePlaces(String direction){
-        if (direction=="Left") {
-            for (int x = 0; x<NotePlaces.length ; x++) {
-                if (NotePlaces[x][0] == (players[d.turn-1].x) && NotePlaces[x][1] == (players[d.turn-1].y - 1)){
-                    f.error.setBackground(Color.yellow);
-                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
-                    f.error.setText("Crossed place!");
-                    return true;
+        switch (direction) {
+            case "Left":
+                for (int[] notePlace : NotePlaces) {
+                    if (notePlace[0] == (players[d.turn - 1].x) && notePlace[1] == (players[d.turn - 1].y - 1)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN, 17));
+                        f.error.setText("Crossed place!");
+                        return false;
+                    }
                 }
-            }
-            return false;
-        } else if (direction=="Right") {
-            for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x) && NotePlaces[x][1] == (players[d.turn-1].y + 1)) {
-                    f.error.setBackground(Color.yellow);
-                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
-                    f.error.setText("Crossed place!");
-                    return true;
+                return true;
+            case "Right":
+                for (int[] notePlace : NotePlaces) {
+                    if (notePlace[0] == (players[d.turn - 1].x) && notePlace[1] == (players[d.turn - 1].y + 1)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN, 17));
+                        f.error.setText("Crossed place!");
+                        return false;
+                    }
                 }
-            }
-            return false;
-        } else if (direction=="Up") {
-            for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x - 1) && NotePlaces[x][1] == (players[d.turn-1].y)) {
-                    f.error.setBackground(Color.yellow);
-                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
-                    f.error.setText("Crossed place!");
-                    return true;
+                return true;
+            case "Up":
+                for (int[] notePlace : NotePlaces) {
+                    if (notePlace[0] == (players[d.turn - 1].x - 1) && notePlace[1] == (players[d.turn - 1].y)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN, 17));
+                        f.error.setText("Crossed place!");
+                        return false;
+                    }
                 }
-            }
-            return false;
-        } else if (direction=="Down") {
-            for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x + 1) && NotePlaces[x][1] == (players[d.turn-1].y)) {
-                    f.error.setBackground(Color.yellow);
-                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
-                    f.error.setText("Crossed place!");
-                    return true;
+                return true;
+            case "Down":
+                for (int[] notePlace : NotePlaces) {
+                    if (notePlace[0] == (players[d.turn - 1].x + 1) && notePlace[1] == (players[d.turn - 1].y)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN, 17));
+                        f.error.setText("Crossed place!");
+                        return false;
+                    }
                 }
-            }
-            return false;
+                return true;
         }
-        return false;
+        return true;
     }
     private void FightTester(int playerNum) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         for (int i=0 ; i<playerNum-1 ; i++){
@@ -91,24 +87,6 @@ public class Game extends Sound{
                     Fight(i,j);
                     return;
                 }
-            }
-        }
-    }
-    private void FindQuest(int quest){
-        boolean QuestFound=false;
-        int x=0,y=0;
-        while (QuestFound==false){
-            if (f.map.map[x][y]==quest){
-                QuestFound=true;
-                players[d.turn-1].questLoc[questLocCount[d.turn-1]][0]= (byte) x;
-                players[d.turn-1].questLoc[questLocCount[d.turn-1]][1]=(byte) y;
-            }
-            if (y<9){
-                y++;
-            }
-            else {
-                y=0;
-                x++;
             }
         }
     }
@@ -137,7 +115,10 @@ public class Game extends Sound{
     private void lootFound() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         f.map.LootDraw(d.turn-1, players);
         f.lootDialog();
-        changeMoney(LootCash);
+        //map[x][y]==1==loot
+        //map[x][y]==2==market
+        int lootCash = 70;
+        changeMoney(lootCash);
         f.map.map[players[d.turn-1].x][players[d.turn-1].y]=0; //null
         coins();
     }
@@ -281,10 +262,7 @@ public class Game extends Sound{
         f.error.setText("Hit a wall!");
     }
     private boolean checkCanMove() {
-        if (!canMove[0] && !canMove[1] && !canMove[2] && !canMove[3]) {
-            return false;
-        }
-        return true;
+        return canMove[0] || canMove[1] || canMove[2] || canMove[3];
     }
     private void stuck() {
         if (!checkCanMove()) {
@@ -297,164 +275,116 @@ public class Game extends Sound{
         marketFrame.errorInfo.setText("The purchase was made successfully");
         try {
             coins();
-        } catch (UnsupportedAudioFileException ex) {
-            throw new RuntimeException(ex);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (LineUnavailableException ex) {
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
             throw new RuntimeException(ex);
         }
         updateStats();
     }
-    public void MovementActions(byte playersCount){
+    public void MovementActions(){
         i=0;
-        f.m.Left.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
-                    outOfMapError();
-                } else if(!walls.checkWallLeft(players, d.turn) && d.DiceNumber>0) {
-                    hitWallError();
+        f.m.Left.addActionListener(e -> {
+            if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
+                outOfMapError();
+            } else if(!walls.checkWallLeft(players, d.turn) && d.DiceNumber>0) {
+                hitWallError();
+            }
+            if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left") && walls.checkWallLeft(players, d.turn)) {
+                players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
+                NotePlaces[i][0]=players[d.turn-1].x;
+                NotePlaces[i][1]=players[d.turn-1].y+1;
+                try {
+                    move();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
                 }
-                if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
-                    players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
-                    NotePlaces[i][0]=players[d.turn-1].x;
-                    NotePlaces[i][1]=players[d.turn-1].y+1;
-                    try {
-                        move();
-                    } catch (UnsupportedAudioFileException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (LineUnavailableException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
 
+            }
+            else {
+                canMove[1] = false;
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
                 }
-                else {
-                    canMove[1] = false;
-                    try {
-                        error();
-                    } catch (UnsupportedAudioFileException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (LineUnavailableException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    stuck();
-                }
+                stuck();
             }
         });
-        f.m.Right.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (players[d.turn-1].y == 9 && d.DiceNumber>0) {
-                    outOfMapError();
-                } else if (!walls.checkWallRight(players, d.turn) && d.DiceNumber>0) {
-                    hitWallError();
-                }
-                if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
-                    players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
-                    NotePlaces[i][0]=players[d.turn-1].x;
-                    NotePlaces[i][1]=players[d.turn-1].y-1;
-                    try {
-                        move();
-                    } catch (UnsupportedAudioFileException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (LineUnavailableException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-                else {
-                    canMove[2] = false;
-                    try {
-                        error();
-                    } catch (UnsupportedAudioFileException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (LineUnavailableException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    stuck();
+        f.m.Right.addActionListener(e -> {
+            if (players[d.turn-1].y == 9 && d.DiceNumber>0) {
+                outOfMapError();
+            } else if (!walls.checkWallRight(players, d.turn) && d.DiceNumber>0) {
+                hitWallError();
+            }
+            if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right") && walls.checkWallRight(players, d.turn)) {
+                players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
+                NotePlaces[i][0]=players[d.turn-1].x;
+                NotePlaces[i][1]=players[d.turn-1].y-1;
+                try {
+                    move();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
-        });
-        f.m.Up.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (players[d.turn-1].x == 0 && d.DiceNumber>0) {
-                    outOfMapError();
-                } else if(!walls.checkWallUp(players, d.turn) && d.DiceNumber>0) {
-                    hitWallError();
+            else {
+                canMove[2] = false;
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
                 }
-                if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
-                    players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
-                    NotePlaces[i][0]=players[d.turn-1].x+1;
-                    NotePlaces[i][1]=players[d.turn-1].y;
-                    try {
-                        move();
-                    } catch (UnsupportedAudioFileException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (LineUnavailableException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-                else {
-                    canMove[0] = false;
-                    try {
-                        error();
-                    } catch (UnsupportedAudioFileException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (LineUnavailableException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    stuck();
-                }
+                stuck();
             }
         });
-        f.m.Down.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (players[d.turn-1].x == 9 && d.DiceNumber>0) {
-                    outOfMapError();
-                } else if (!walls.checkWallDown(players, d.turn) && d.DiceNumber>0) {
-                    hitWallError();
+        f.m.Up.addActionListener(e -> {
+            if (players[d.turn-1].x == 0 && d.DiceNumber>0) {
+                outOfMapError();
+            } else if(!walls.checkWallUp(players, d.turn) && d.DiceNumber>0) {
+                hitWallError();
+            }
+            if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up") && walls.checkWallUp(players, d.turn)) {
+                players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
+                NotePlaces[i][0]=players[d.turn-1].x+1;
+                NotePlaces[i][1]=players[d.turn-1].y;
+                try {
+                    move();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
                 }
-                if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
-                    players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
-                    NotePlaces[i][0]=players[d.turn-1].x-1;
-                    NotePlaces[i][1]=players[d.turn-1].y;
-                    try {
-                        move();
-                    } catch (UnsupportedAudioFileException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (LineUnavailableException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+            }
+            else {
+                canMove[0] = false;
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
                 }
-                else {
-                    canMove[3] = false;
-                    try {
-                        error();
-                    } catch (UnsupportedAudioFileException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (LineUnavailableException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    stuck();
+                stuck();
+            }
+        });
+        f.m.Down.addActionListener(e -> {
+            if (players[d.turn-1].x == 9 && d.DiceNumber>0) {
+                outOfMapError();
+            } else if (!walls.checkWallDown(players, d.turn) && d.DiceNumber>0) {
+                hitWallError();
+            }
+            if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down") && walls.checkWallDown(players, d.turn)) {
+                players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
+                NotePlaces[i][0]=players[d.turn-1].x-1;
+                NotePlaces[i][1]=players[d.turn-1].y;
+                try {
+                    move();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
                 }
+            }
+            else {
+                canMove[3] = false;
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                stuck();
             }
         });
     }
@@ -545,11 +475,7 @@ public class Game extends Sound{
         Castle.addActionListener(e -> {
             try {
                 castleAction();
-            } catch (UnsupportedAudioFileException ex) {
-                throw new RuntimeException(ex);
-            } catch (LineUnavailableException ex) {
-                throw new RuntimeException(ex);
-            } catch (IOException ex) {
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -587,7 +513,6 @@ public class Game extends Sound{
     }
     private void Fight(int p1,int p2) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         fightSound();
-        short x;
         if (players[p1].power>players[p2].power){
             FightStats(p1, p2);
         } else if (players[p1].power<players[p2].power) {
@@ -600,38 +525,29 @@ public class Game extends Sound{
             else FightStats(p2, p1);
         }
     }
-    private void GameLoop(byte playersCount) {
+    private void GameLoop() {
         d.turn = 1;
         f.playerTurn.setText("Turn: 1");
-        d.dice.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    diceSound();
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                }
-                f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                f.error.setBackground(Color.GREEN);
-                f.error.setText("Go!");
-                d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
-                d.setTarget(d.DiceNumber);
-                d.dice.setIcon(new ImageIcon(d.target));
-                d.dice.setEnabled(false);
-                MovesLeft.setText("Moves Left: " + d.DiceNumber);
-                for (int k = 0 ; k < NotePlaces.length ; k++) {
-                    for (int z = 0; z < NotePlaces[k].length; z++) {
-                        NotePlaces[k][z] = -2;
-                    }
-                }
-                i=0;
+        d.dice.addActionListener(e -> {
+            try {
+                diceSound();
+            } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                throw new RuntimeException(ex);
             }
+            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+            f.error.setBackground(Color.GREEN);
+            f.error.setText("Go!");
+            d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
+            d.setTarget(d.DiceNumber);
+            d.dice.setIcon(new ImageIcon(d.target));
+            d.dice.setEnabled(false);
+            MovesLeft.setText("Moves Left: " + d.DiceNumber);
+            for (int[] notePlace : NotePlaces) {
+                Arrays.fill(notePlace, -2);
+            }
+            i=0;
         });
-        MovementActions(playersCount);
+        MovementActions();
     }
     private void updateStats() {
         scoreboard.Power[d.turn - 1].setText(players[d.turn - 1].getName() + " power: " + players[d.turn - 1].power);
@@ -653,11 +569,7 @@ public class Game extends Sound{
     Game(byte playersCount) {
         try {
             S.gameMusic();
-        } catch (UnsupportedAudioFileException ex) {
-            throw new RuntimeException(ex);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (LineUnavailableException ex) {
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
             throw new RuntimeException(ex);
         }
         random=new Random();
@@ -665,9 +577,7 @@ public class Game extends Sound{
         OpenMarket=new JButton(new ImageIcon("images\\marketB.png"));
         setupPlayers(playersCount);
 
-        for (int k = 0; k < countKnowQuestLoc.length; k++) {
-            countKnowQuestLoc[k]=0;
-        }
+        Arrays.fill(countKnowQuestLoc, (byte) 0);
 
         for (int i = 0 ; i<f.map.crossedPlace.length ; i++){
             for (int j = 0 ; j<f.map.crossedPlace[i].length ; j++){
@@ -684,22 +594,15 @@ public class Game extends Sound{
         OpenMarket.setVisible(false);
         OpenMarket.setEnabled(false);
         OpenMarket.setOpaque(true);
-        OpenMarket.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    marketSound();
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                }
-                marketFrame.marketframe.setVisible(true);
-                marketFrame.marketframe.setEnabled(true);
-                f.gameWindow.setEnabled(false);
+        OpenMarket.addActionListener(e -> {
+            try {
+                marketSound();
+            } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                throw new RuntimeException(ex);
             }
+            marketFrame.marketFrame.setVisible(true);
+            marketFrame.marketFrame.setEnabled(true);
+            f.gameWindow.setEnabled(false);
         });
 
         changeTurn=new JButton(new ImageIcon("images\\turn.png"));
@@ -708,51 +611,35 @@ public class Game extends Sound{
         changeTurn.setVisible(false);
         changeTurn.setEnabled(false);
         changeTurn.setOpaque(true);
-        changeTurn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!Castle.isEnabled()) {
-                    Castle.setEnabled(true);
-                }
-                try {
-                    FightTester(playersCount);
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-                d.dice.setEnabled(true);
-                d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
-                f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                f.error.setBackground(Color.orange);
-                f.error.setText("Roll the dice!");
-                MovesLeft.setText("Roll the dice");
-                f.map.LootHider(d.turn-1);
-                checkCastleEnabled();
-                checkMarketEnabled();
-                try {
-                    turnFinished();
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-                f.map.LootShower(d.turn-1);
-///////////////////////////////////////////////////////////////////////////////////                for (int k = 0; ; k++) {
-//                    setvisible label for treasure
-//                }
-
-                //f.showCheckMarks();
-                changeTurn.setEnabled(false);
-                changeTurn.setVisible(false);
-                for (int k = 0 ; k < 6 && NotePlaces[k][0]!=-2; k++) {
-                    if (NotePlaces[k][0] > -1 && NotePlaces[k][0] < 10 && NotePlaces[k][1] < 10 && NotePlaces[k][1] > -1) {
-                        f.map.crossedPlace[NotePlaces[k][0]][NotePlaces[k][1]].setVisible(false);
-                    }
+        changeTurn.addActionListener(e -> {
+            if (!Castle.isEnabled()) {
+                Castle.setEnabled(true);
+            }
+            try {
+                FightTester(playersCount);
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                throw new RuntimeException(ex);
+            }
+            d.dice.setEnabled(true);
+            d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
+            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+            f.error.setBackground(Color.orange);
+            f.error.setText("Roll the dice!");
+            MovesLeft.setText("Roll the dice");
+            f.map.LootHider(d.turn-1);
+            checkCastleEnabled();
+            checkMarketEnabled();
+            try {
+                turnFinished();
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                throw new RuntimeException(ex);
+            }
+            f.map.LootShower(d.turn-1);
+            changeTurn.setEnabled(false);
+            changeTurn.setVisible(false);
+            for (int k = 0 ; k < 6 && NotePlaces[k][0]!=-2; k++) {
+                if (NotePlaces[k][0] > -1 && NotePlaces[k][0] < 10 && NotePlaces[k][1] < 10 && NotePlaces[k][1] > -1) {
+                    f.map.crossedPlace[NotePlaces[k][0]][NotePlaces[k][1]].setVisible(false);
                 }
             }
         });
@@ -763,11 +650,7 @@ public class Game extends Sound{
                 marketFrame.errorInfo.setText("you got +5 power.");
                 try {
                     coins();
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
                 updateStats();
@@ -776,11 +659,7 @@ public class Game extends Sound{
                 marketFrame.errorInfo.setText("Insufficient fund");
                 try {
                     error();
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -795,11 +674,7 @@ public class Game extends Sound{
             else {
                 try {
                     weaponError(1);
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -814,11 +689,7 @@ public class Game extends Sound{
             else {
                 try {
                     weaponError(2);
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -833,11 +704,7 @@ public class Game extends Sound{
             else {
                 try {
                     weaponError(3);
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -852,11 +719,7 @@ public class Game extends Sound{
             else {
                 try {
                     weaponError(4);
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -868,11 +731,7 @@ public class Game extends Sound{
                 marketFrame.errorInfo.setText("Insufficient fund");
                 try {
                     error();
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -919,40 +778,12 @@ public class Game extends Sound{
                 }
             }
         });
-        /*marketFrame.QuestButton.addActionListener(e -> {
-            if (countKnowQuestLoc[d.turn-1]<8 && players[d.turn-1].money>=250) {
-                int quest = random.nextInt(8) + 11;
-                for (int k = 0; k < j; k++) {
-                    if (quest == SaveRandomQuests[k]) {
-                        quest = random.nextInt(8) + 11;
-                        k = -1;
-                    }
-                }
-                SaveRandomQuests[j] = quest;
-                players[d.turn - 1].boughtLocation[countKnowQuestLoc[d.turn - 1]] = true;
-                f.map.toggleQuestLoc(players[d.turn-1], false);
-                //FindQuest(quest);
-                countKnowQuestLoc[d.turn - 1]++;
-                j++;
-                players[d.turn - 1].money -= 250;
-                scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
-                marketFrame.errorInfo.setText("you got one of treasure locations.");
-                correspondStats();
-            }
-            else if(countKnowQuestLoc[d.turn-1]>=8){
-                marketFrame.errorInfo.setText("you know all of quest locations");
-            } else if (players[d.turn-1].money<250) {
-                marketFrame.errorInfo.setText("Insufficient fund");
-            }
-        });*/
         marketFrame.Close.addActionListener(e -> {
             f.gameWindow.setEnabled(true);
-            marketFrame.marketframe.setVisible(false);
+            marketFrame.marketFrame.setVisible(false);
             marketFrame.errorInfo.setText("Waiting for Action");
         });
-        f.toggleScoreboard.addActionListener(e-> {
-            scoreboard.scoreboard.setVisible(!scoreboard.scoreboard.isVisible());
-        }) ;
+        f.toggleScoreboard.addActionListener(e-> scoreboard.scoreboard.setVisible(!scoreboard.scoreboard.isVisible())) ;
         MovesLeft=new JLabel();
         MovesLeft.setBounds(75,435,100,30);
         MovesLeft.setText("Roll the dice");
@@ -971,6 +802,6 @@ public class Game extends Sound{
         setupCastleButton();
         f.jl.add(Castle, JLayeredPane.MODAL_LAYER);
         f.jl.add(OpenMarket,JLayeredPane.MODAL_LAYER);
-        GameLoop(playersCount);
+        GameLoop();
     }
 }

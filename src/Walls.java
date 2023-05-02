@@ -20,37 +20,25 @@ public class Walls {
         if (players[turn-1].x == 0 || players[turn-1].x == 10 || players[turn-1].y == -1) {
             return false;
         }
-        if(walls[0][players[turn-1].y][players[turn-1].x-1] == 1) {
-            return false;
-        }
-        return true;
+        return walls[0][players[turn - 1].y][players[turn - 1].x - 1] != 1;
     }
     boolean checkWallDown(Player[] players, int turn) {
         if (players[turn-1].y == 10) {
             return true;
         }
-        if(walls[0][players[turn-1].y][players[turn-1].x] == 1) {
-            return false;
-        }
-        return true;
+        return walls[0][players[turn - 1].y][players[turn - 1].x] != 1;
     }
     boolean checkWallRight(Player[] players, int turn) {
         if (players[turn-1].y == -1 || players[turn-1].y == 10) {
             return true;
         }
-        if(walls[1][players[turn-1].y][players[turn-1].x] == 1) {
-            return false;
-        }
-        return true;
+        return walls[1][players[turn - 1].y][players[turn - 1].x] != 1;
     }
     boolean checkWallLeft(Player[] players, int turn) {
         if (players[turn-1].y == 10 || players[turn-1].y == -1) {
             return true;
         }
-        if(walls[1][players[turn-1].y-1][players[turn-1].x] == 1) {
-            return false;
-        }
-        return true;
+        return walls[1][players[turn - 1].y - 1][players[turn - 1].x] != 1;
     }
     Walls(JLayeredPane jl) {
         int[][] houses = new int[10][10];

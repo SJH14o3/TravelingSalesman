@@ -2,20 +2,21 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MarketFrame {
-    public JFrame marketframe=new JFrame("Market");
+    public JFrame marketFrame=new JFrame("Market");
     public JButton QuestButton = new JButton(new ImageIcon("images\\buyQuest.png"));
     public JButton PowerButton = new JButton();
     public JButton[] weapons = new JButton[4];
     public JButton Close = new JButton("Exit Market");
     public JLabel errorInfo=new JLabel("Waiting for Action");
-    private JLabel info=new JLabel("Welcome to Market!");
-    MarketFrame(){
-        marketframe.setBounds(730,330,400,420);
-        marketframe.setEnabled(true);
-        marketframe.setLayout(null);
-        marketframe.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE );
-        marketframe.setResizable(false);
 
+    MarketFrame(){
+        marketFrame.setBounds(730,330,400,420);
+        marketFrame.setEnabled(true);
+        marketFrame.setLayout(null);
+        marketFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE );
+        marketFrame.setResizable(false);
+
+        JLabel info = new JLabel("Welcome to Market!");
         info.setBounds(0,0,400,50);
         info.setVisible(true);
         info.setEnabled(true);
@@ -39,7 +40,7 @@ public class MarketFrame {
             else {
                 weapons[i].setBounds(214, 110 + (i/2 * 80), 150, 70);
             }
-            marketframe.add(weapons[i]);
+            marketFrame.add(weapons[i]);
         }
 
         PowerButton.setBounds(20,270,150,70);
@@ -55,12 +56,12 @@ public class MarketFrame {
         Close.setVisible(true);
         Close.setOpaque(true);
 
-        marketframe.add(PowerButton);
-        marketframe.add(QuestButton);
-        marketframe.add(info);
-        marketframe.add(errorInfo);
-        marketframe.add(Close);
-        marketframe.setVisible(false);
+        marketFrame.add(PowerButton);
+        marketFrame.add(QuestButton);
+        marketFrame.add(info);
+        marketFrame.add(errorInfo);
+        marketFrame.add(Close);
+        marketFrame.setVisible(false);
 
     }
 }
