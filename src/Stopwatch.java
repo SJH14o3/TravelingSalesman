@@ -24,7 +24,7 @@ public class Stopwatch{
     });
     Stopwatch(Frame scoreboard){
         timeLabel.setText(hours_string+":"+minutes_string+":"+seconds_string);
-        timeLabel.setBounds(0,0,250,75);
+        timeLabel.setBounds(0,0,300,75);
         timeLabel.setFont(new Font("Verdana",Font.PLAIN,40));
         timeLabel.setBackground(Color.green);
         timeLabel.setBorder(BorderFactory.createBevelBorder(1));

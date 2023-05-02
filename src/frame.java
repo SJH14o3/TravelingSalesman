@@ -32,7 +32,7 @@ public class frame{
         f.add(l);
         ImageIcon I = new ImageIcon("images\\icon.png");
         f.setIconImage(I.getImage());
-        f.setBounds(150,5,1300,800);
+        f.setBounds(350,5,1300,800);
         f.setLayout(null);
         f.setVisible(true);
         newgame.addActionListener(new ActionListener(){
@@ -42,7 +42,6 @@ public class frame{
                 new Game((byte) 2);
             }
         });
-        //while(true)System.out.println(f.getMousePosition());
     }
 
 

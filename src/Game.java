@@ -8,6 +8,7 @@ public class Game {
     //map[x][y]==1==loot
     //map[x][y]==2==market
     private final int LootCash=70;
+    private boolean[] canMove = {true, true, true, true};
     byte countKnowQuestLoc[]=new byte[4];
     int i=0 , j=0;
     byte[] questLocCount={0,0,0,0};
@@ -19,7 +20,6 @@ public class Game {
     JLabel MovesLeft;
     JOptionPane FightWinner;
     JButton changeTurn, Castle, OpenMarket;
-    int[] SaveRandomQuests=new int[8] ;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}} ;
     GameWindow f=new GameWindow();
     MarketFrame marketFrame=new MarketFrame();
@@ -146,13 +146,13 @@ public class Game {
     }
     private void hitTrap() {
         boolean mode = true;
-        if (players[d.turn-1].money < 50 && players[d.turn-1].power > 20) {
+        if (players[d.turn-1].money < 50 && players[d.turn-1].power > 10) {
             trapPower();
         }
-        else if (players[d.turn-1].power < 20 && players[d.turn-1].money > 50) {
+        else if (players[d.turn-1].power < 10 && players[d.turn-1].money > 50) {
             trapMoney();
         }
-        else if (players[d.turn-1].power < 20 && players[d.turn-1].money < 50) {
+        else if (players[d.turn-1].power < 10 && players[d.turn-1].money < 50) {
             mode = false;
             f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
             killPlayer(d.turn-1, (short) 0);
@@ -202,6 +202,7 @@ public class Game {
                 case 18:
                     if (!players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11]) {
                         players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11] = true;
+                        players[d.turn-1].boughtLocation[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11] = false;
                         f.map.toggleQuestLoc(players[d.turn-1], false);
                         f.questFound(f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11);
                     }
@@ -217,6 +218,9 @@ public class Game {
         changeTurn.setVisible(true);
     }
     private void move() {
+        for (int k = 0; k < 4; k++) {
+            canMove[k] = true;
+        }
         checkCastleEnabled();
         checkMarketEnabled();
         f.error.setBackground(Color.green);
@@ -269,6 +273,19 @@ public class Game {
         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
         f.error.setText("Hit a wall!");
     }
+    private boolean checkCanMove() {
+        if (!canMove[0] && !canMove[1] && !canMove[2] && !canMove[3]) {
+            return false;
+        }
+        return true;
+    }
+    private void stuck() {
+        if (!checkCanMove()) {
+            d.dice.setEnabled(false);
+            d.DiceNumber = 0;
+            waitForChangeTurn();
+        }
+    }
     public void MovementActions(byte playersCount){
         i=0;
         f.m.Left.addActionListener(new ActionListener() {
@@ -286,6 +303,10 @@ public class Game {
                     move();
 
                 }
+                else {
+                    canMove[1] = false;
+                    stuck();
+                }
             }
         });
         f.m.Right.addActionListener(new ActionListener() {
@@ -301,6 +322,10 @@ public class Game {
                     NotePlaces[i][0]=players[d.turn-1].x;
                     NotePlaces[i][1]=players[d.turn-1].y-1;
                     move();
+                }
+                else {
+                    canMove[2] = false;
+                    stuck();
                 }
             }
         });
@@ -318,6 +343,10 @@ public class Game {
                     NotePlaces[i][1]=players[d.turn-1].y;
                     move();
                 }
+                else {
+                    canMove[0] = false;
+                    stuck();
+                }
             }
         });
         f.m.Down.addActionListener(new ActionListener() {
@@ -334,6 +363,10 @@ public class Game {
                     NotePlaces[i][1]=players[d.turn-1].y;
                     move();
                 }
+                else {
+                    canMove[3] = false;
+                    stuck();
+                }
             }
         });
     }
@@ -345,33 +378,65 @@ public class Game {
             if (i==0 || i==2){
                 players[i].x=0;
                 players[i].y=10;
-                scoreboard.Money[i].setText(players[i].getName()+" money: "+players[i].money);
-                scoreboard.Power[i].setText(players[i].getName()+" power: "+players[i].power);
             } else if (i==1 || i==3) {
                 players[i].x=9;
                 players[i].y=-1;
-                scoreboard.Money[i].setText(players[i].getName()+" money: "+players[i].money);
-                scoreboard.Power[i].setText(players[i].getName()+" power: "+players[i].power);
             }
+            scoreboard.name[i].setText(players[i].getName());
+            scoreboard.Money[i].setText("money: "+players[i].money);
+            scoreboard.Power[i].setText("power: "+players[i].power);
+            scoreboard.quest[i].setText("completed quest: "+0);
         }
+    }
+    private void finishGame() {
+        String winner = "";
+        boolean isDraw = false;
+        if (players[0].completedQuest > players[1].completedQuest) winner = "player 1";
+        else if (players[1].completedQuest > players[0].completedQuest) winner = "player 2";
+        else isDraw = true;
+        if (!scoreboard.scoreboard.isVisible()) {
+            scoreboard.scoreboard.setVisible(true);
+        }
+        if (!isDraw) {
+            JOptionPane.showMessageDialog(null, winner + "Won! Press \"ok\" to exit", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "DRAW!  Press \"ok\" to exit", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+        }
+        System.exit(0);
     }
     private void castleAction() {
         String in = JOptionPane.showInputDialog("Enter Quest Location");
-        if (in.charAt(0) >= 49 && in.charAt(0) <= 57 && in.charAt(1) == ' ' && in.charAt(2) >= 49 && in.charAt(2) <= 57 ) {
+        if (in == null) {
+            JOptionPane.showMessageDialog(null, "Please enter correct input", "Empty Input!", JOptionPane.WARNING_MESSAGE);
+        }
+        else if (in.length() < 3) {
+            JOptionPane.showMessageDialog(null, "Input must be at least 3 characters", "Wrong Input!", JOptionPane.WARNING_MESSAGE);
+        }
+        else if (in.charAt(0) >= 49 && in.charAt(0) <= 57 && in.charAt(1) == ' ' && in.charAt(2) >= 49 && in.charAt(2) <= 57 ) {
             int x = in.charAt(2) - 49;
             int y = in.charAt(0) - 49;
             if (f.map.map[y][x] > 10 && f.map.map[y][x] < 19 && players[d.turn-1].knowQuestsLoc[f.map.map[y][x] - 11] && questNum == f.map.map[y][x] - 10) {
-                JOptionPane.showMessageDialog(null, "Successfully found quest!", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Successfully found quest! your round is over", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
                 changeMoney(100 + questNum * 100);
-                f.map.treasureLoc[questNum-1].setIcon(new ImageIcon("images\\foundQuest.png"));
+                f.map.renderCompleteQuest(questNum-1);
                 players[d.turn-1].questsFound[questNum-1] = true;
                 questNum++;
                 f.questPanel.changeQuestIcon((byte) questNum);
                 f.map.map[y][x] = 0;
+                players[d.turn-1].completedQuest++;
+                scoreboard.quest[d.turn-1].setText("completed quest: "+ players[d.turn-1].completedQuest);
+                if (questNum == 9) {
+                    finishGame();
+                }
             }
             else {
-                JOptionPane.showMessageDialog(null, "Wrong!", "Wrong!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Wrong! Your round is over.", "Wrong!", JOptionPane.ERROR_MESSAGE);
             }
+            Castle.setEnabled(false);
+            d.dice.setEnabled(false);
+            d.DiceNumber = 0;
+            waitForChangeTurn();
         }
         else {
             JOptionPane.showMessageDialog(null, "Try again!", "Wrong Input", JOptionPane.WARNING_MESSAGE);
@@ -387,6 +452,7 @@ public class Game {
     private void killPlayer(int p, short money) {
         players[p].money-=money;
         players[p].power=0;
+        players[p].weapon = 0;
         if (p == 0) {
             players[p].x = 0;
             players[p].y = 10;
@@ -452,6 +518,22 @@ public class Game {
         });
         MovementActions(playersCount);
     }
+    private void updateStats() {
+        scoreboard.Power[d.turn - 1].setText(players[d.turn - 1].getName() + " power: " + players[d.turn - 1].power);
+        scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+        correspondStats();
+    }
+    private void weaponError(int in) {
+        if (players[d.turn-1].weapon == in) {
+            marketFrame.errorInfo.setText("Already bought this item");
+        }
+        else if (players[d.turn-1].weapon > in) {
+            marketFrame.errorInfo.setText("Better weapon has been bought");
+        }
+        else {
+            marketFrame.errorInfo.setText("Insufficient fund");
+        }
+    }
     void questDone() {
         questNum--;
     }
@@ -492,18 +574,18 @@ public class Game {
             }
         });
 
-        changeTurn=new JButton("Tap to change turn");
+        changeTurn=new JButton(new ImageIcon("images\\turn.png"));
         changeTurn.setBounds(55,480,150,100);
         changeTurn.setVisible(true);
-        changeTurn.setHorizontalAlignment(SwingConstants.CENTER);
         changeTurn.setVisible(false);
         changeTurn.setEnabled(false);
         changeTurn.setOpaque(true);
-        changeTurn.setFont(new Font("Combria", Font.BOLD,13));
-        changeTurn.setBackground(Color.blue);
         changeTurn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!Castle.isEnabled()) {
+                    Castle.setEnabled(true);
+                }
                 FightTester(playersCount);
                 d.dice.setEnabled(true);
                 d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
@@ -532,17 +614,107 @@ public class Game {
         });
         marketFrame.PowerButton.addActionListener(e -> {
             if (players[d.turn-1].money>=50) {
-                players[d.turn - 1].power += 40;
+                players[d.turn - 1].power += 5;
                 players[d.turn - 1].money -= 50;
-                marketFrame.errorInfo.setText("you got (+40) power.");
-                scoreboard.Power[d.turn - 1].setText(players[d.turn - 1].getName() + " power: " + players[d.turn - 1].power);
-                scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+                marketFrame.errorInfo.setText("you got +5 power.");
+                updateStats();
             }
             else {
-                marketFrame.errorInfo.setText("can't buy power!you need more money.");
+                marketFrame.errorInfo.setText("Insufficient fund");
             }
         });
-        marketFrame.QuestButton.addActionListener(e -> {
+        marketFrame.weapons[0].addActionListener(e -> {
+            if (players[d.turn-1].money>=50 && players[d.turn-1].weapon < 1) {
+                players[d.turn-1].weapon = 1;
+                players[d.turn - 1].power = 10;
+                players[d.turn - 1].money -= 50;
+                marketFrame.errorInfo.setText("The purchase was made successfully");
+                updateStats();
+            }
+            else {
+                weaponError(1);
+            }
+        });
+        marketFrame.weapons[1].addActionListener(e -> {
+            if (players[d.turn-1].money>=150 && players[d.turn-1].weapon < 2) {
+                players[d.turn-1].weapon = 2;
+                players[d.turn - 1].power = 40;
+                players[d.turn - 1].money -= 150;
+                marketFrame.errorInfo.setText("The purchase was made successfully");
+                updateStats();
+            }
+            else {
+                weaponError(2);
+            }
+        });
+        marketFrame.weapons[2].addActionListener(e -> {
+            if (players[d.turn-1].money>=400 && players[d.turn-1].weapon < 3) {
+                players[d.turn-1].weapon = 3;
+                players[d.turn - 1].power = 120;
+                players[d.turn - 1].money -= 400;
+                marketFrame.errorInfo.setText("The purchase was made successfully");
+                updateStats();
+            }
+            else {
+                weaponError(3);
+            }
+        });
+        marketFrame.weapons[3].addActionListener(e -> {
+            if (players[d.turn-1].money>=1000 && players[d.turn-1].weapon < 4) {
+                players[d.turn-1].weapon = 4;
+                players[d.turn - 1].power = 350;
+                players[d.turn - 1].money -= 1000;
+                marketFrame.errorInfo.setText("The purchase was made successfully");
+                updateStats();
+            }
+            else {
+                weaponError(4);
+            }
+        });
+        marketFrame.QuestButton.addActionListener(e-> {
+            if(countKnowQuestLoc[d.turn-1]>=8){
+                marketFrame.errorInfo.setText("You do know all of quest locations");
+            } else if (players[d.turn-1].money<250) {
+                marketFrame.errorInfo.setText("Insufficient fund");
+            }
+            else {
+                Random r = new Random();
+                int x;
+                boolean control = true;
+                boolean mode = true;
+                while (control) {
+                    x = r.nextInt(8-questNum+1) + questNum - 1;
+                    if (!players[d.turn-1].knowQuestsLoc[x] && !players[d.turn-1].boughtLocation[x]) {
+                        control = false;
+                        players[d.turn - 1].boughtLocation[x] = true;
+                        f.map.toggleQuestLoc(players[d.turn-1], false);
+                        //FindQuest(quest);
+                        countKnowQuestLoc[d.turn - 1]++;
+                        players[d.turn - 1].money -= 250;
+                        scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+                        marketFrame.errorInfo.setText("The purchase was Successful.");
+                        correspondStats();
+                    }
+                    else if (mode) {
+                        mode = false;
+                        int count = 0;
+                        for (int i = 0; i < 8; i++) {
+                            if (players[d.turn-1].knowQuestsLoc[i]) {
+                                count++;
+                            }
+                            else if (players[d.turn-1].boughtLocation[i]) {
+                                count++;
+                            }
+                        }
+                        if (count == 9 - questNum) {
+                            marketFrame.errorInfo.setText("You do know all of quest locations");
+                            control = false;
+                        }
+                    }
+                }
+            }
+        });
+        /*marketFrame.QuestButton.addActionListener(e -> {
             if (countKnowQuestLoc[d.turn-1]<8 && players[d.turn-1].money>=250) {
                 int quest = random.nextInt(8) + 11;
                 for (int k = 0; k < j; k++) {
@@ -552,7 +724,7 @@ public class Game {
                     }
                 }
                 SaveRandomQuests[j] = quest;
-                players[d.turn - 1].knowQuestsLoc[countKnowQuestLoc[d.turn - 1]] = true;
+                players[d.turn - 1].boughtLocation[countKnowQuestLoc[d.turn - 1]] = true;
                 f.map.toggleQuestLoc(players[d.turn-1], false);
                 //FindQuest(quest);
                 countKnowQuestLoc[d.turn - 1]++;
@@ -560,19 +732,22 @@ public class Game {
                 players[d.turn - 1].money -= 250;
                 scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
                 marketFrame.errorInfo.setText("you got one of treasure locations.");
+                correspondStats();
             }
             else if(countKnowQuestLoc[d.turn-1]>=8){
                 marketFrame.errorInfo.setText("you know all of quest locations");
             } else if (players[d.turn-1].money<250) {
-                marketFrame.errorInfo.setText("can't buy!you need more money");
+                marketFrame.errorInfo.setText("Insufficient fund");
             }
-        });
+        });*/
         marketFrame.Close.addActionListener(e -> {
             f.gameWindow.setEnabled(true);
             marketFrame.marketframe.setVisible(false);
-            marketFrame.errorInfo.setText(":-)");
+            marketFrame.errorInfo.setText("Waiting for Action");
         });
-
+        f.toggleScoreboard.addActionListener(e-> {
+            scoreboard.scoreboard.setVisible(!scoreboard.scoreboard.isVisible());
+        }) ;
         MovesLeft=new JLabel();
         MovesLeft.setBounds(75,435,100,30);
         MovesLeft.setText("Roll the dice");

@@ -11,7 +11,9 @@ public class Map extends JPanel {
     JLabel[][] crossedPlace=new JLabel[10][10];
     JLabel[] markets=new JLabel[5];
     JLabel[][] loots=new JLabel[13][2];
-    JLabel[] treasureLoc = new JLabel[8];
+    JPanel[] treasureLoc = new JPanel[8];
+    JLabel[] treasureIcon = new JLabel[8];
+    JLabel[] unknownQuest = new JLabel[8];
 
     private class Trap {
         int x;
@@ -77,16 +79,40 @@ public class Map extends JPanel {
             if (treasureLoc[i].isVisible() && nextTurn) {
                 treasureLoc[i].setVisible(false);
             }
+            if (unknownQuest[i].isVisible()) {
+                unknownQuest[i].setVisible(false);
+            }
             if (p.knowQuestsLoc[i] && !treasureLoc[i].isVisible()) {
                 treasureLoc[i].setVisible(true);
+            }
+            if (p.boughtLocation[i] && !unknownQuest[i].isVisible()) {
+                unknownQuest[i].setVisible(true);
             }
         }
     }
     private void setupTreasureLabel(int x, int y, int count) {
-        treasureLoc[count] = new JLabel(new ImageIcon("images\\quest.png"));
+        unknownQuest[count] = new JLabel(new ImageIcon("images\\quest.png"));
+        unknownQuest[count].setBounds(27 + x*(65), 27 + y*(65) , 65, 65);
+        unknownQuest[count].setVisible(false);
+        add(unknownQuest[count]);
+
+        treasureLoc[count] = new JPanel();
+        treasureLoc[count].setLayout(null);
+        String target = "images\\Treasures\\" + (count+1) + "s.png";
+        JLabel label = new JLabel(new ImageIcon("images\\green.png"));
+        label.setBounds(0, 0, 65, 65);
+        treasureIcon[count] = new JLabel(new ImageIcon(target));
+        treasureIcon[count].setBounds(0, 0, 65, 65);
+        treasureLoc[count].add(treasureIcon[count]);
+        treasureLoc[count].add(label);
         treasureLoc[count].setBounds(27 + x*(65), 27 + y*(65) , 65, 65);
-        treasureLoc[count].setVisible(true);
+        treasureLoc[count].setVisible(false);
+        treasureLoc[count].setOpaque(false);
         add(treasureLoc[count]);
+    }
+    public void renderCompleteQuest(int count) {
+        treasureIcon[count].setIcon(new ImageIcon("images\\foundQuest.png"));
+        treasureIcon[count].repaint();
     }
     public void markTrap(int x, int y, int turn) {
         for (int i = 0; i < traps.length; i++) {
@@ -135,7 +161,6 @@ public class Map extends JPanel {
     }
     private void setTraps() {
         int count = random.nextInt(4) + 5;
-        System.out.println("Traps count: " + count);
         traps = new Trap[count];
         int x, y;
         for (int i = 0; i < count; i++) {
@@ -248,6 +273,6 @@ public class Map extends JPanel {
         LootDivide();
         add(border);
         setOpaque(false);
-        printMap();
+        //printMap();
     }
 }

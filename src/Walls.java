@@ -18,14 +18,15 @@ public class Walls {
     }
     boolean checkWallUp(Player[] players, int turn) {
         if(walls[0][players[turn-1].y][players[turn-1].x-1] == 1) {
-            System.out.println("hit a wall");
             return false;
         }
         return true;
     }
     boolean checkWallDown(Player[] players, int turn) {
+        if (players[turn-1].y == 10) {
+            return true;
+        }
         if(walls[0][players[turn-1].y][players[turn-1].x] == 1) {
-            System.out.println("hit a wall");
             return false;
         }
         return true;
@@ -35,7 +36,6 @@ public class Walls {
             return true;
         }
         if(walls[1][players[turn-1].y][players[turn-1].x] == 1) {
-            System.out.println("hit a wall");
             return false;
         }
         return true;
@@ -45,7 +45,6 @@ public class Walls {
             return true;
         }
         if(walls[1][players[turn-1].y-1][players[turn-1].x] == 1) {
-            System.out.println("hit a wall");
             return false;
         }
         return true;

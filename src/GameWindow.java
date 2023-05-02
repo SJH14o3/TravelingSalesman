@@ -3,15 +3,18 @@ import java.awt.*;
 
 public class GameWindow{
     public JFrame gameWindow;
-    public JLabel error,playerTurn, showName, coins, coinsCount, strength, strengthCount;
+    public JLabel error,playerTurn, showName, coins, coinsCount, strength;
+    public JLabel strengthCount;
     public JLayeredPane jl = new JLayeredPane();
     Map map = new Map();
     MovementButtons m;
     JLabel[] startImg = {new JLabel(new ImageIcon("images\\startLeft.png")), new JLabel(new ImageIcon("images\\startRight.png"))};
     JLabel background = new JLabel(new ImageIcon("images\\background.png"));
     QuestPanel questPanel = new QuestPanel(jl);
+    JButton toggleScoreboard = new JButton(new ImageIcon("images\\scoreboard.png"));
+
     private void setupFrame() {
-        gameWindow.setBounds(235,5,1300,800);
+        gameWindow.setBounds(350,5,1300,800);
         gameWindow.setLayout(null);
         gameWindow.setTitle("Traveling Salesman");
         gameWindow.setResizable(false);
@@ -43,6 +46,9 @@ public class GameWindow{
         gameWindow=new JFrame();
         error=new JLabel("Roll the dice");
         playerTurn=new JLabel();
+
+        toggleScoreboard.setBounds(50,27, 160, 110);
+        jl.add(toggleScoreboard, JLayeredPane.MODAL_LAYER);
 
         error.setBounds(50,655,160,55);
         error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
@@ -103,6 +109,5 @@ public class GameWindow{
         strengthCount.setFont(new Font("Gill Sans MT Condensed", Font.BOLD, 25));
         strengthCount.setForeground(new Color(0xFFFFFF));
         jl.add(strengthCount, JLayeredPane.MODAL_LAYER);
-        //while(true)System.out.println(gameWindow.getMousePosition());
     }
 }
