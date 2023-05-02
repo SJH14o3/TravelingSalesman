@@ -17,6 +17,9 @@ public class Walls {
         jl.add(label, JLayeredPane.POPUP_LAYER);
     }
     boolean checkWallUp(Player[] players, int turn) {
+        if (players[turn-1].x == 0 || players[turn-1].x == 10 || players[turn-1].y == -1) {
+            return false;
+        }
         if(walls[0][players[turn-1].y][players[turn-1].x-1] == 1) {
             return false;
         }
@@ -32,7 +35,7 @@ public class Walls {
         return true;
     }
     boolean checkWallRight(Player[] players, int turn) {
-        if (players[turn-1].y == -1) {
+        if (players[turn-1].y == -1 || players[turn-1].y == 10) {
             return true;
         }
         if(walls[1][players[turn-1].y][players[turn-1].x] == 1) {
@@ -41,7 +44,7 @@ public class Walls {
         return true;
     }
     boolean checkWallLeft(Player[] players, int turn) {
-        if (players[turn-1].y == 10) {
+        if (players[turn-1].y == 10 || players[turn-1].y == -1) {
             return true;
         }
         if(walls[1][players[turn-1].y-1][players[turn-1].x] == 1) {

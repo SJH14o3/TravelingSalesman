@@ -6,12 +6,13 @@ public class ScoreBoard {
     public JLabel[] name =new JLabel[2];
     public JLabel[] Money=new JLabel[2],Power=new JLabel[2], quest = new JLabel[2];
     private Font font=new Font("Comic Sans MS", Font.BOLD,11);
+    public Stopwatch stopwatch;
     ScoreBoard(){
         scoreboard=new JFrame("Score Board");
         scoreboard.setBounds(0,0,316,300);
         scoreboard.setEnabled(false);
         scoreboard.setLayout(null);
-        Stopwatch stopwatch=new Stopwatch(scoreboard);
+        stopwatch=new Stopwatch(scoreboard);
 
         name[0]=new JLabel();
         name[0].setBounds(0,75,150,40);

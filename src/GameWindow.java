@@ -9,7 +9,7 @@ public class GameWindow{
     Map map = new Map();
     MovementButtons m;
     JLabel[] startImg = {new JLabel(new ImageIcon("images\\startLeft.png")), new JLabel(new ImageIcon("images\\startRight.png"))};
-    JLabel background = new JLabel(new ImageIcon("images\\background.png"));
+    JLabel background = new JLabel(new ImageIcon("images\\background.jpg"));
     QuestPanel questPanel = new QuestPanel(jl);
     JButton toggleScoreboard = new JButton(new ImageIcon("images\\scoreboard.png"));
 

@@ -9,7 +9,7 @@ public class Stopwatch{
     String seconds_string=String.format("%02d",seconds);
     String minutes_string=String.format("%02d",minutes);
     String hours_string=String.format("%02d",hours);
-    private Timer timer=new Timer(1000, new ActionListener() {
+    public Timer timer=new Timer(1000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             elapsedTime+=1000;
