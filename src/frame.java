@@ -1,6 +1,7 @@
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 
 public class frame{
@@ -25,11 +26,19 @@ public class frame{
         f.setLayout(null);
         f.setVisible(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JLabel x = new JLabel(new ImageIcon("images\\white.png"));
+        x.setBounds(0, 0, 100, 62);
+
+        //new Intro(f);
+
         f.add(newGame);
         f.add(guide);
         f.add(l);
         ImageIcon I = new ImageIcon("images\\icon.png");
         f.setIconImage(I.getImage());
+
+
+        f.add(x);
 
         guide.addActionListener(e-> {
             JLabel label = new JLabel("<html><p align=center>" + "Welcome to Traveling Salesman<br>" +
@@ -75,6 +84,5 @@ public class frame{
             new Game((byte) 2);
         });
     }
-
 
 }
