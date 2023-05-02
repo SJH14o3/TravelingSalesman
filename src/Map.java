@@ -111,6 +111,7 @@ public class Map extends JPanel {
     }
     public void renderCompleteQuest(int count) {
         treasureIcon[count].setIcon(new ImageIcon("images\\foundQuest.png"));
+        unknownQuest[count].setIcon(new ImageIcon("images\\greenC.png"));
         treasureIcon[count].repaint();
     }
     public void markTrap(int y, int x, int turn) {

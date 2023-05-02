@@ -115,10 +115,7 @@ public class Game extends Sound{
     private void lootFound() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         f.map.LootDraw(d.turn-1, players);
         f.lootDialog();
-        //map[x][y]==1==loot
-        //map[x][y]==2==market
-        int lootCash = 70;
-        changeMoney(lootCash);
+        changeMoney(70);
         f.map.map[players[d.turn-1].x][players[d.turn-1].y]=0; //null
         coins();
     }
@@ -444,7 +441,9 @@ public class Game extends Sound{
                 JOptionPane.showMessageDialog(null, "Successfully found quest! your round is over", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
                 changeMoney(100 + questNum * 100);
                 f.map.renderCompleteQuest(questNum-1);
-                players[d.turn-1].questsFound[questNum-1] = true;
+                for (int i = 0; i < 2; i++) {
+                    players[i].questsFound[questNum-1] = true;
+                }
                 questNum++;
                 f.questPanel.changeQuestIcon((byte) questNum);
                 f.map.map[y][x] = 0;
@@ -538,6 +537,7 @@ public class Game extends Sound{
             f.error.setBackground(Color.GREEN);
             f.error.setText("Go!");
             d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
+            //d.DiceNumber = 6;
             d.setTarget(d.DiceNumber);
             d.dice.setIcon(new ImageIcon(d.target));
             d.dice.setEnabled(false);
