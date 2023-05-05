@@ -21,7 +21,7 @@ public class frame{
         guide.setBounds(577,530,130,75);
 
         f =new JFrame("Traveling Salesman");
-        f.setBounds(350,5,1300,800);
+        f.setBounds(240,5,1300,800);
         f.setLayout(null);
         f.setVisible(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

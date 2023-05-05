@@ -14,7 +14,7 @@ public class GameWindow{
     JButton toggleScoreboard = new JButton(new ImageIcon("images\\scoreboard.png"));
 
     private void setupFrame() {
-        gameWindow.setBounds(350,5,1300,800);
+        gameWindow.setBounds(240,5,1300,800);
         gameWindow.setLayout(null);
         gameWindow.setTitle("Traveling Salesman");
         gameWindow.setResizable(false);
