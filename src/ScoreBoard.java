@@ -9,8 +9,10 @@ public class ScoreBoard {
     public Stopwatch stopwatch;
     ScoreBoard(){
         scoreboard=new JFrame("Score Board");
-        scoreboard.setBounds(0,0,316,300);
-        scoreboard.setEnabled(false);
+        scoreboard.setBounds(0,0,316,275);
+        scoreboard.setEnabled(true);
+        scoreboard.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE );
+        scoreboard.setResizable(false);
         scoreboard.setLayout(null);
         stopwatch=new Stopwatch(scoreboard);
 

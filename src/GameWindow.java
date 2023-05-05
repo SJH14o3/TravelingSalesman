@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameWindow{
+    private static GameWindow f = new GameWindow();
     public JFrame gameWindow;
     public JLabel error,playerTurn, showName, coins, coinsCount, strength;
     public JLabel strengthCount;
@@ -12,9 +13,12 @@ public class GameWindow{
     JLabel background = new JLabel(new ImageIcon("images\\background.jpg"));
     QuestPanel questPanel = new QuestPanel(jl);
     JButton toggleScoreboard = new JButton(new ImageIcon("images\\scoreboard.png"));
+    public static GameWindow getF(){
+        return f;
+    }
 
     private void setupFrame() {
-        gameWindow.setBounds(350,5,1300,800);
+        gameWindow.setBounds(240,5,1300,800);
         gameWindow.setLayout(null);
         gameWindow.setTitle("Traveling Salesman");
         gameWindow.setResizable(false);
