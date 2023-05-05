@@ -2,20 +2,21 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MarketFrame {
-    public JFrame marketframe=new JFrame("Market");
-    public JButton QuestButton = new JButton();
+    public JFrame marketFrame=new JFrame("Market");
+    public JButton QuestButton = new JButton(new ImageIcon("images\\buyQuest.png"));
     public JButton PowerButton = new JButton();
+    public JButton[] weapons = new JButton[4];
     public JButton Close = new JButton("Exit Market");
-    public JLabel errorInfo=new JLabel(":-)");
-    private JLabel QuestText=new JLabel("Buy the quest place") , info=new JLabel("you can buy power for 50$ and the quest location for 250$");
-    private ImageIcon QuestIMG=new ImageIcon("images\\questbutton1.png") , PowerIMG=new ImageIcon("images\\sword.png");
-    MarketFrame(){
-        marketframe.setBounds(730,330,400,250);
-        marketframe.setEnabled(true);
-        marketframe.setLayout(null);
-        marketframe.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE );
-        marketframe.setResizable(false);
+    public JLabel errorInfo=new JLabel("Waiting for Action");
 
+    MarketFrame(){
+        marketFrame.setBounds(730,330,400,420);
+        marketFrame.setEnabled(true);
+        marketFrame.setLayout(null);
+        marketFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE );
+        marketFrame.setResizable(false);
+
+        JLabel info = new JLabel("Welcome to Market!");
         info.setBounds(0,0,400,50);
         info.setVisible(true);
         info.setEnabled(true);
@@ -30,34 +31,37 @@ public class MarketFrame {
         errorInfo.setBackground(Color.red);
         errorInfo.setHorizontalAlignment(SwingConstants.CENTER);
 
-        QuestText.setBounds(0,150,400,30);
-        QuestText.setEnabled(true);
-        QuestText.setVisible(true);
-        QuestText.setOpaque(true);
-        QuestText.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < weapons.length; i++) {
+            String target = "images\\Weapons\\" + (i+1) + ".png";
+            weapons[i] = new JButton(new ImageIcon(target));
+            if (i % 2 == 0) {
+                weapons[i].setBounds(20, 110 + (i/2 * 80), 150, 70);
+            }
+            else {
+                weapons[i].setBounds(214, 110 + (i/2 * 80), 150, 70);
+            }
+            marketFrame.add(weapons[i]);
+        }
 
-        PowerButton.setBounds(20,100,150,70);
+        PowerButton.setBounds(20,270,150,70);
         PowerButton.setVisible(true);
         PowerButton.setOpaque(true);
-        PowerButton.setIcon(PowerIMG);
-        PowerButton.setText("Buy power");
+        PowerButton.setIcon(new ImageIcon("images\\powerMarket.png"));
 
-        QuestButton.setBounds(214,100,150,70);
+        QuestButton.setBounds(214,270,150,70);
         QuestButton.setVisible(true);
         QuestButton.setOpaque(true);
-        QuestButton.setIcon(QuestIMG);
-        QuestButton.add(QuestText);
 
-        Close.setBounds(117, 180, 150, 20);
+        Close.setBounds(117, 350, 150, 20);
         Close.setVisible(true);
         Close.setOpaque(true);
 
-        marketframe.add(PowerButton);
-        marketframe.add(QuestButton);
-        marketframe.add(info);
-        marketframe.add(errorInfo);
-        marketframe.add(Close);
-        marketframe.setVisible(false);
+        marketFrame.add(PowerButton);
+        marketFrame.add(QuestButton);
+        marketFrame.add(info);
+        marketFrame.add(errorInfo);
+        marketFrame.add(Close);
+        marketFrame.setVisible(false);
 
     }
 }

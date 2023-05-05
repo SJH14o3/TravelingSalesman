@@ -17,38 +17,28 @@ public class Walls {
         jl.add(label, JLayeredPane.POPUP_LAYER);
     }
     boolean checkWallUp(Player[] players, int turn) {
-        if(walls[0][players[turn-1].y][players[turn-1].x-1] == 1) {
-            System.out.println("hit a wall");
+        if (players[turn-1].x == 0 || players[turn-1].x == 10 || players[turn-1].y == -1) {
             return false;
         }
-        return true;
+        return walls[0][players[turn - 1].y][players[turn - 1].x - 1] != 1;
     }
     boolean checkWallDown(Player[] players, int turn) {
-        if(walls[0][players[turn-1].y][players[turn-1].x] == 1) {
-            System.out.println("hit a wall");
-            return false;
-        }
-        return true;
-    }
-    boolean checkWallRight(Player[] players, int turn) {
-        if (players[turn-1].y == -1) {
-            return true;
-        }
-        if(walls[1][players[turn-1].y][players[turn-1].x] == 1) {
-            System.out.println("hit a wall");
-            return false;
-        }
-        return true;
-    }
-    boolean checkWallLeft(Player[] players, int turn) {
         if (players[turn-1].y == 10) {
             return true;
         }
-        if(walls[1][players[turn-1].y-1][players[turn-1].x] == 1) {
-            System.out.println("hit a wall");
-            return false;
+        return walls[0][players[turn - 1].y][players[turn - 1].x] != 1;
+    }
+    boolean checkWallRight(Player[] players, int turn) {
+        if (players[turn-1].y == -1 || players[turn-1].y == 10) {
+            return true;
         }
-        return true;
+        return walls[1][players[turn - 1].y][players[turn - 1].x] != 1;
+    }
+    boolean checkWallLeft(Player[] players, int turn) {
+        if (players[turn-1].y == 10 || players[turn-1].y == -1) {
+            return true;
+        }
+        return walls[1][players[turn - 1].y - 1][players[turn - 1].x] != 1;
     }
     Walls(JLayeredPane jl) {
         int[][] houses = new int[10][10];

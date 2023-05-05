@@ -11,7 +11,9 @@ public class Map extends JPanel {
     JLabel[][] crossedPlace=new JLabel[10][10];
     JLabel[] markets=new JLabel[5];
     JLabel[][] loots=new JLabel[13][2];
-    JLabel[] treasureLoc = new JLabel[8];
+    JPanel[] treasureLoc = new JPanel[8];
+    JLabel[] treasureIcon = new JLabel[8];
+    JLabel[] unknownQuest = new JLabel[8];
 
     private class Trap {
         int x;
@@ -19,29 +21,28 @@ public class Map extends JPanel {
         boolean[] showTrap = new boolean[2];
         JLabel icon = new JLabel(new ImageIcon("images\\trap.png"));
 
-        Trap(int x, int y) {
-            this.x = x;
-            this. y = y;
-            icon.setBounds(27 + x*(65), 27 + y*(65) , 65, 65);
+        Trap(int y, int x) {
+            this.x = y;
+            this.y = x;
+            icon.setBounds(27 + y*(65), 27 + x*(65) , 65, 65);
             icon.setVisible(false);
             add(icon);
         }
     }
     Trap[] traps;
-    private boolean checkAround(int x, int y) {
+    private boolean checkAround(int x, int y, int in) {
         if (x > 0) {
-            if (y > 0 && map[x-1][y-1] == 3) return false;
-            if (y < 9 && map[x-1][y+1] == 3) return false;
-            if (map[x-1][y] == 3) return false;
+            if (y > 0 && map[x-1][y-1] == in) return true;
+            if (y < 9 && map[x-1][y+1] == in) return true;
+            if (map[x-1][y] == in) return true;
         }
         if (x < 9) {
-            if (y > 0 && map[x+1][y-1] == 3) return false;
-            if (y < 9 && map[x+1][y+1] == 3) return false;
-            if (map[x+1][y] == 3) return false;
+            if (y > 0 && map[x+1][y-1] == in) return true;
+            if (y < 9 && map[x+1][y+1] == in) return true;
+            if (map[x+1][y] == in) return true;
         }
-        if (y > 0 && map[x][y-1] == 3) return false;
-        if (y < 9 && map[x][y+1] == 3) return false;
-        return true;
+        if (y > 0 && map[x][y-1] == in) return true;
+        return y < 9 && map[x][y + 1] == in;
     }
     private int whatQuadron(int x, int y) {
         if (x < 5 && y < 5) return 0;
@@ -77,37 +78,62 @@ public class Map extends JPanel {
             if (treasureLoc[i].isVisible() && nextTurn) {
                 treasureLoc[i].setVisible(false);
             }
+            if (unknownQuest[i].isVisible()) {
+                unknownQuest[i].setVisible(false);
+            }
             if (p.knowQuestsLoc[i] && !treasureLoc[i].isVisible()) {
                 treasureLoc[i].setVisible(true);
+            }
+            if (p.boughtLocation[i] && !unknownQuest[i].isVisible()) {
+                unknownQuest[i].setVisible(true);
             }
         }
     }
     private void setupTreasureLabel(int x, int y, int count) {
-        treasureLoc[count] = new JLabel(new ImageIcon("images\\quest.png"));
+        unknownQuest[count] = new JLabel(new ImageIcon("images\\quest.png"));
+        unknownQuest[count].setBounds(27 + x*(65), 27 + y*(65) , 65, 65);
+        unknownQuest[count].setVisible(false);
+        add(unknownQuest[count]);
+
+        treasureLoc[count] = new JPanel();
+        treasureLoc[count].setLayout(null);
+        String target = "images\\Treasures\\" + (count+1) + "s.png";
+        JLabel label = new JLabel(new ImageIcon("images\\green.png"));
+        label.setBounds(0, 0, 65, 65);
+        treasureIcon[count] = new JLabel(new ImageIcon(target));
+        treasureIcon[count].setBounds(0, 0, 65, 65);
+        treasureLoc[count].add(treasureIcon[count]);
+        treasureLoc[count].add(label);
         treasureLoc[count].setBounds(27 + x*(65), 27 + y*(65) , 65, 65);
-        treasureLoc[count].setVisible(true);
+        treasureLoc[count].setVisible(false);
+        treasureLoc[count].setOpaque(false);
         add(treasureLoc[count]);
     }
-    public void markTrap(int x, int y, int turn) {
-        for (int i = 0; i < traps.length; i++) {
-            if (traps[i].x == y && traps[i].y == x) {
-                traps[i].showTrap[turn] = true;
+    public void renderCompleteQuest(int count) {
+        treasureIcon[count].setIcon(new ImageIcon("images\\foundQuest.png"));
+        unknownQuest[count].setIcon(new ImageIcon("images\\greenC.png"));
+        treasureIcon[count].repaint();
+    }
+    public void markTrap(int y, int x, int turn) {
+        for (Trap trap : traps) {
+            if (trap.x == x && trap.y == y) {
+                trap.showTrap[turn] = true;
                 return;
             }
         }
     }
     public void showTraps(int turn) {
         hideTraps();
-        for (int i = 0; i < traps.length; i++) {
-            if (traps[i].showTrap[turn]) {
-                traps[i].icon.setVisible(true);
+        for (Trap trap : traps) {
+            if (trap.showTrap[turn]) {
+                trap.icon.setVisible(true);
             }
         }
     }
     public void hideTraps() {
-        for (int i = 0; i < traps.length; i++) {
-            if (traps[i].icon.isVisible()) {
-                traps[i].icon.setVisible(false);
+        for (Trap trap : traps) {
+            if (trap.icon.isVisible()) {
+                trap.icon.setVisible(false);
             }
         }
     }
@@ -116,7 +142,7 @@ public class Map extends JPanel {
         do {
             x = random.nextInt(2);
             y = random.nextInt(2);
-        } while (!isEmpty(x, y));
+        } while (isEmpty(x + 4, y + 4));
         map[x+4][y+4] = 4;
         JLabel castle = new JLabel(new ImageIcon("images\\castle.png"));
         castle.setBounds(287 + y*65, 287 + x*65, 65, 65);
@@ -124,25 +150,20 @@ public class Map extends JPanel {
     }
     private boolean checkNotStart(int x, int y) {
         if (x == 0 && y == 9) return false;
-        if (x == 9 && y == 0) return false;
-        return true;
+        return x != 9 || y != 0;
     }
     private boolean isEmpty(int x, int y) {
-        if (map[x][y] == 0 && checkNotStart(x,y)) {
-            return true;
-        }
-        return false;
+        return map[x][y] != 0 || !checkNotStart(x, y);
     }
     private void setTraps() {
         int count = random.nextInt(4) + 5;
-        System.out.println("Traps count: " + count);
         traps = new Trap[count];
         int x, y;
         for (int i = 0; i < count; i++) {
             do {
                 x = random.nextInt(10);
                 y = random.nextInt(10);
-            } while(!checkAround(x, y) || !isEmpty(x, y));
+            } while(checkAround(x, y, 3) || isEmpty(x, y));
             map[x][y] = 3;
             traps[i] = new Trap(y, x);
         }
@@ -163,22 +184,24 @@ public class Map extends JPanel {
         for (int j=x=y=0 ; j< markets.length ; j++) {
             do {
                 if (j==0) {
-                    x = random.nextInt(5);
-                    y = random.nextInt(5);
+                    x = random.nextInt(4);
+                    y = random.nextInt(4);
                 } else if (j==1) {
-                    x = random.nextInt(5);
-                    y = random.nextInt(5)+5;
+                    x = random.nextInt(4);
+                    y = random.nextInt(4)+6;
                 } else if (j==2) {
-                    x = random.nextInt(5)+5;
-                    y = random.nextInt(5);
+                    x = random.nextInt(4)+6;
+                    y = random.nextInt(4);
                 } else if (j==3) {
-                    x = random.nextInt(5)+5;
-                    y = random.nextInt(5)+5;
+                    x = random.nextInt(4)+6;
+                    y = random.nextInt(4)+6;
                 } else if (j==4) {
-                    x = random.nextInt(10);
-                    y = random.nextInt(10);
+                    do {
+                        x = random.nextInt(10);
+                        y = random.nextInt(10);
+                    } while (checkAround(x, y, 2));
                 }
-            } while(!isEmpty(x, y));
+            } while(isEmpty(x, y));
             map[x][y] = 2;
             markets[j]=new JLabel(new ImageIcon("images\\market.png"));
             markets[j].setBounds(29+y*65,29+x*65,61,61);
@@ -192,7 +215,7 @@ public class Map extends JPanel {
             do {
                 x = random.nextInt(10);
                 y = random.nextInt(10);
-            } while (!isEmpty(x, y));
+            } while (isEmpty(x, y));
             map[x][y] = 1;
         }
     }
@@ -212,20 +235,20 @@ public class Map extends JPanel {
         LootDrawCounter++;
     }
     public void LootShower(int in){
-        for (int j = 0; j < loots.length; j++) {
-            loots[j][in].setVisible(true);
+        for (JLabel[] loot : loots) {
+            loot[in].setVisible(true);
         }
     }
     public void LootHider(int in){
-        for (int j = 0; j < loots.length; j++) {
-            loots[j][in].setVisible(false);
+        for (JLabel[] loot : loots) {
+            loot[in].setVisible(false);
         }
     }
     private void printMap() {
-        for (int i =0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
-                System.out.print(map[i][j] + " ");
-                if (map[i][j] < 10) {
+        for (int[] ints : map) {
+            for (int anInt : ints) {
+                System.out.print(anInt + " ");
+                if (anInt < 10) {
                     System.out.print(" ");
                 }
             }
@@ -246,6 +269,6 @@ public class Map extends JPanel {
         LootDivide();
         add(border);
         setOpaque(false);
-        printMap();
+        //printMap();
     }
 }

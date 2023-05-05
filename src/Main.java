@@ -1,6 +1,6 @@
+
 public class Main {
     public static void main(String[] args) {
-        frame f = new frame();
-        //my comment.
+        new frame();
     }
 }

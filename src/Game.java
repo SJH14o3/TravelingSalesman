@@ -1,30 +1,29 @@
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
 
-public class Game {
-    //map[x][y]==1==loot
-    //map[x][y]==2==market
-    private final int LootCash=70;
-    byte countKnowQuestLoc[]=new byte[4];
-    int i=0 , j=0;
-    byte[] questLocCount={0,0,0,0};
-    private Random random;
-    private JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
+public class Game extends Sound{
+    private final boolean[] canMove = {true, true, true, true};
+    byte[] countKnowQuestLoc=new byte[4];
+    int i=0;
+    private final Random random;
+    private final JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     Player[] players;
     ScoreBoard scoreboard;
     ImageIcon cross=new ImageIcon("images\\cross.png");
     JLabel MovesLeft;
     JOptionPane FightWinner;
     JButton changeTurn, Castle, OpenMarket;
-    int[] SaveRandomQuests=new int[8] ;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}} ;
     GameWindow f=new GameWindow();
     MarketFrame marketFrame=new MarketFrame();
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
+    Sound S = new Sound();
     private int questNum = 1;
     void makeFightFrame(int p){
         FightWinner=new JOptionPane();
@@ -37,50 +36,51 @@ public class Game {
 
     }
     boolean CheckNotePlaces(String direction){
-        if (direction=="Left") {
-            for (int x = 0; x<NotePlaces.length ; x++) {
-                if (NotePlaces[x][0] == (players[d.turn-1].x) && NotePlaces[x][1] == (players[d.turn-1].y - 1)){
-                    f.error.setBackground(Color.yellow);
-                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
-                    f.error.setText("Crossed place!");
-                    return true;
+        switch (direction) {
+            case "Left":
+                for (int[] notePlace : NotePlaces) {
+                    if (notePlace[0] == (players[d.turn - 1].x) && notePlace[1] == (players[d.turn - 1].y - 1)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN, 17));
+                        f.error.setText("Crossed place!");
+                        return false;
+                    }
                 }
-            }
-            return false;
-        } else if (direction=="Right") {
-            for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x) && NotePlaces[x][1] == (players[d.turn-1].y + 1)) {
-                    f.error.setBackground(Color.yellow);
-                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
-                    f.error.setText("Crossed place!");
-                    return true;
+                return true;
+            case "Right":
+                for (int[] notePlace : NotePlaces) {
+                    if (notePlace[0] == (players[d.turn - 1].x) && notePlace[1] == (players[d.turn - 1].y + 1)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN, 17));
+                        f.error.setText("Crossed place!");
+                        return false;
+                    }
                 }
-            }
-            return false;
-        } else if (direction=="Up") {
-            for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x - 1) && NotePlaces[x][1] == (players[d.turn-1].y)) {
-                    f.error.setBackground(Color.yellow);
-                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
-                    f.error.setText("Crossed place!");
-                    return true;
+                return true;
+            case "Up":
+                for (int[] notePlace : NotePlaces) {
+                    if (notePlace[0] == (players[d.turn - 1].x - 1) && notePlace[1] == (players[d.turn - 1].y)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN, 17));
+                        f.error.setText("Crossed place!");
+                        return false;
+                    }
                 }
-            }
-            return false;
-        } else if (direction=="Down") {
-            for (int x = 0 ; x<NotePlaces.length ; x++){
-                if (NotePlaces[x][0] == (players[d.turn-1].x + 1) && NotePlaces[x][1] == (players[d.turn-1].y)) {
-                    f.error.setBackground(Color.yellow);
-                    f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,17));
-                    f.error.setText("Crossed place!");
-                    return true;
+                return true;
+            case "Down":
+                for (int[] notePlace : NotePlaces) {
+                    if (notePlace[0] == (players[d.turn - 1].x + 1) && notePlace[1] == (players[d.turn - 1].y)) {
+                        f.error.setBackground(Color.yellow);
+                        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN, 17));
+                        f.error.setText("Crossed place!");
+                        return false;
+                    }
                 }
-            }
-            return false;
+                return true;
         }
-        return false;
+        return true;
     }
-    private void FightTester(int playerNum){
+    private void FightTester(int playerNum) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         for (int i=0 ; i<playerNum-1 ; i++){
             for (int j=1 ; j<playerNum ; j++){
                 if (players[i].x==players[j].x && players[i].y==players[j].y){
@@ -90,28 +90,16 @@ public class Game {
             }
         }
     }
-    private void FindQuest(int quest){
-        boolean QuestFound=false;
-        int x=0,y=0;
-        while (QuestFound==false){
-            if (f.map.map[x][y]==quest){
-                QuestFound=true;
-                players[d.turn-1].questLoc[questLocCount[d.turn-1]][0]= (byte) x;
-                players[d.turn-1].questLoc[questLocCount[d.turn-1]][1]=(byte) y;
-            }
-            if (y<9){
-                y++;
-            }
-            else {
-                y=0;
-                x++;
-            }
-        }
-    }
     private void checkCastleEnabled() {
         if (Castle.isEnabled()) {
             Castle.setVisible(false);
             Castle.setEnabled(false);
+        }
+    }
+    private void checkMarketEnabled() {
+        if (OpenMarket.isEnabled()) {
+            OpenMarket.setVisible(false);
+            OpenMarket.setEnabled(false);
         }
     }
     private void changeMoney(int in) {
@@ -124,11 +112,12 @@ public class Game {
         f.updatePowerCount(players[d.turn-1].power);
         scoreboard.Power[d.turn-1].setText(players[d.turn-1].getName()+" Power: "+players[d.turn-1].power);
     }
-    private void lootFound() {
+    private void lootFound() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         f.map.LootDraw(d.turn-1, players);
         f.lootDialog();
-        changeMoney(LootCash);
+        changeMoney(70);
         f.map.map[players[d.turn-1].x][players[d.turn-1].y]=0; //null
+        coins();
     }
     private void trapMoney() {
         f.TrapDialog(players[d.turn-1].money/10, "Money!");
@@ -138,12 +127,22 @@ public class Game {
         f.TrapDialog(players[d.turn-1].power/10, "Power!");
         changePower(-players[d.turn-1].power/10);
     }
-    private void hitTrap() {
-        if (players[d.turn-1].money < 100) {
+    private void hitTrap() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        boolean mode = true;
+        trapSound();
+        if (players[d.turn-1].money < 50 && players[d.turn-1].power > 10) {
             trapPower();
         }
-        else if (players[d.turn-1].power < 50) {
+        else if (players[d.turn-1].power < 10 && players[d.turn-1].money > 50) {
             trapMoney();
+        }
+        else if (players[d.turn-1].power < 10 && players[d.turn-1].money < 50) {
+            mode = false;
+            f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+            killPlayer(d.turn-1, (short) 0);
+            JOptionPane.showMessageDialog(null, "You stepped on a trap, without having\nenough money and power. so you died!", "Trap killed You", JOptionPane.ERROR_MESSAGE);
+            d.DiceNumber = 0;
+            waitForChangeTurn();
         }
         else {
             int r = random.nextInt(2);
@@ -154,15 +153,13 @@ public class Game {
                 trapPower();
             }
         }
-        f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+        if (mode) {
+            f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+        }
     }
-    private void checkLocation(boolean startRound) {
+    private void checkLocation(boolean startRound) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         if (players[d.turn-1].x > -1 && players[d.turn-1].y > -1 && players[d.turn-1].y < 10 && players[d.turn-1].x < 10) {
             switch(f.map.map[players[d.turn-1].x][players[d.turn-1].y]) {
-                case 0:
-                    OpenMarket.setEnabled(false);
-                    OpenMarket.setVisible(false);
-                    break;
                 case 1:
                     lootFound();
                     break;
@@ -188,7 +185,9 @@ public class Game {
                 case 17:
                 case 18:
                     if (!players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11]) {
+                        questFoundSound();
                         players[d.turn-1].knowQuestsLoc[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11] = true;
+                        players[d.turn-1].boughtLocation[f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11] = false;
                         f.map.toggleQuestLoc(players[d.turn-1], false);
                         f.questFound(f.map.map[players[d.turn-1].x][players[d.turn-1].y] - 11);
                     }
@@ -196,8 +195,19 @@ public class Game {
             }
         }
     }
-    private void move() {
+    private void waitForChangeTurn() {
+        f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+        f.error.setBackground(Color.red);
+        f.error.setText("Change the turn!");
+        changeTurn.setEnabled(true);
+        changeTurn.setVisible(true);
+    }
+    private void move() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        for (int k = 0; k < 4; k++) {
+            canMove[k] = true;
+        }
         checkCastleEnabled();
+        checkMarketEnabled();
         f.error.setBackground(Color.green);
         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
         f.error.setText("Go!");
@@ -210,11 +220,7 @@ public class Game {
         i++;
         checkLocation(false);
         if (d.DiceNumber==0){
-            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-            f.error.setBackground(Color.red);
-            f.error.setText("Change the turn!");
-            changeTurn.setEnabled(true);
-            changeTurn.setVisible(true);
+            waitForChangeTurn();
         }
     }
     private void updateIcon(int i) {
@@ -227,7 +233,7 @@ public class Game {
         f.strengthCount.setText(String.valueOf(players[d.turn-1].power));
         f.playerTurn.setText("Turn: "+ (d.turn));
     }
-    private void turnFinished() {
+    private void turnFinished() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         icons[d.turn-1].setVisible(false);
         if (d.turn == 1) {
             d.turn++;
@@ -252,71 +258,130 @@ public class Game {
         f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
         f.error.setText("Hit a wall!");
     }
-    public void MovementActions(byte playersCount){
+    private boolean checkCanMove() {
+        return canMove[0] || canMove[1] || canMove[2] || canMove[3];
+    }
+    private void stuck() {
+        if (!checkCanMove()) {
+            d.dice.setEnabled(false);
+            d.DiceNumber = 0;
+            waitForChangeTurn();
+        }
+    }
+    private void successfulPurchase() {
+        marketFrame.errorInfo.setText("The purchase was made successfully");
+        try {
+            coins();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+            throw new RuntimeException(ex);
+        }
+        updateStats();
+    }
+    public void MovementActions(){
         i=0;
-        f.m.Left.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
-                    outOfMapError();
-                } else if(!walls.checkWallLeft(players, d.turn) && d.DiceNumber>0) {
-                    hitWallError();
-                }
-                if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left")==false && walls.checkWallLeft(players, d.turn)) {
-                    players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
-                    NotePlaces[i][0]=players[d.turn-1].x;
-                    NotePlaces[i][1]=players[d.turn-1].y+1;
+        f.m.Left.addActionListener(e -> {
+            if (players[d.turn-1].y == 0 && d.DiceNumber>0) {
+                outOfMapError();
+            } else if(!walls.checkWallLeft(players, d.turn) && d.DiceNumber>0) {
+                hitWallError();
+            }
+            if (players[d.turn-1].y > 0 && d.DiceNumber>0 && CheckNotePlaces("Left") && walls.checkWallLeft(players, d.turn)) {
+                players[d.turn-1].y = (byte) (players[d.turn-1].y - 1);
+                NotePlaces[i][0]=players[d.turn-1].x;
+                NotePlaces[i][1]=players[d.turn-1].y+1;
+                try {
                     move();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
 
+            }
+            else {
+                canMove[1] = false;
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
                 }
+                stuck();
             }
         });
-        f.m.Right.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (players[d.turn-1].y == 9 && d.DiceNumber>0) {
-                    outOfMapError();
-                } else if (!walls.checkWallRight(players, d.turn) && d.DiceNumber>0) {
-                    hitWallError();
-                }
-                if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right")==false && walls.checkWallRight(players, d.turn)) {
-                    players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
-                    NotePlaces[i][0]=players[d.turn-1].x;
-                    NotePlaces[i][1]=players[d.turn-1].y-1;
+        f.m.Right.addActionListener(e -> {
+            if (players[d.turn-1].y == 9 && d.DiceNumber>0) {
+                outOfMapError();
+            } else if (!walls.checkWallRight(players, d.turn) && d.DiceNumber>0) {
+                hitWallError();
+            }
+            if (players[d.turn-1].y < 9 && d.DiceNumber>0 && CheckNotePlaces("Right") && walls.checkWallRight(players, d.turn)) {
+                players[d.turn-1].y = (byte) (players[d.turn-1].y + 1);
+                NotePlaces[i][0]=players[d.turn-1].x;
+                NotePlaces[i][1]=players[d.turn-1].y-1;
+                try {
                     move();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
-        });
-        f.m.Up.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (players[d.turn-1].x == 0 && d.DiceNumber>0) {
-                    outOfMapError();
-                } else if(!walls.checkWallUp(players, d.turn) && d.DiceNumber>0) {
-                    hitWallError();
+            else {
+                canMove[2] = false;
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
                 }
-                if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up")==false && walls.checkWallUp(players, d.turn)) {
-                    players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
-                    NotePlaces[i][0]=players[d.turn-1].x+1;
-                    NotePlaces[i][1]=players[d.turn-1].y;
-                    move();
-                }
+                stuck();
             }
         });
-        f.m.Down.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (players[d.turn-1].x == 9 && d.DiceNumber>0) {
-                    outOfMapError();
-                } else if (!walls.checkWallDown(players, d.turn) && d.DiceNumber>0) {
-                    hitWallError();
-                }
-                if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down")==false && walls.checkWallDown(players, d.turn)) {
-                    players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
-                    NotePlaces[i][0]=players[d.turn-1].x-1;
-                    NotePlaces[i][1]=players[d.turn-1].y;
+        f.m.Up.addActionListener(e -> {
+            if (players[d.turn-1].x == 0 && d.DiceNumber>0) {
+                outOfMapError();
+            } else if(!walls.checkWallUp(players, d.turn) && d.DiceNumber>0) {
+                hitWallError();
+            }
+            if (players[d.turn-1].x > 0 && players[d.turn-1].y>-1 && d.DiceNumber>0 && CheckNotePlaces("Up") && walls.checkWallUp(players, d.turn)) {
+                players[d.turn-1].x = (byte) (players[d.turn-1].x - 1);
+                NotePlaces[i][0]=players[d.turn-1].x+1;
+                NotePlaces[i][1]=players[d.turn-1].y;
+                try {
                     move();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
                 }
+            }
+            else {
+                canMove[0] = false;
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                stuck();
+            }
+        });
+        f.m.Down.addActionListener(e -> {
+            if (players[d.turn-1].x == 9 && d.DiceNumber>0) {
+                outOfMapError();
+            } else if (!walls.checkWallDown(players, d.turn) && d.DiceNumber>0) {
+                hitWallError();
+            }
+            if (players[d.turn-1].x < 9 && d.DiceNumber>0 && players[d.turn-1].y != 10 && CheckNotePlaces("Down") && walls.checkWallDown(players, d.turn)) {
+                players[d.turn-1].x = (byte) (players[d.turn-1].x + 1);
+                NotePlaces[i][0]=players[d.turn-1].x-1;
+                NotePlaces[i][1]=players[d.turn-1].y;
+                try {
+                    move();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            else {
+                canMove[3] = false;
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                stuck();
             }
         });
     }
@@ -328,33 +393,74 @@ public class Game {
             if (i==0 || i==2){
                 players[i].x=0;
                 players[i].y=10;
-                scoreboard.Money[i].setText(players[i].getName()+" money: "+players[i].money);
-                scoreboard.Power[i].setText(players[i].getName()+" power: "+players[i].power);
             } else if (i==1 || i==3) {
                 players[i].x=9;
                 players[i].y=-1;
-                scoreboard.Money[i].setText(players[i].getName()+" money: "+players[i].money);
-                scoreboard.Power[i].setText(players[i].getName()+" power: "+players[i].power);
             }
+            scoreboard.name[i].setText(players[i].getName());
+            scoreboard.Money[i].setText("money: "+players[i].money);
+            scoreboard.Power[i].setText("power: "+players[i].power);
+            scoreboard.quest[i].setText("completed quest: "+0);
         }
     }
-    private void castleAction() {
+    private void finishGame() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        S.gameFinished();
+        scoreboard.stopwatch.timer.stop();
+        String winner = "";
+        boolean isDraw = false;
+        if (players[0].completedQuest > players[1].completedQuest) winner = "player 1";
+        else if (players[1].completedQuest > players[0].completedQuest) winner = "player 2";
+        else isDraw = true;
+        if (!scoreboard.scoreboard.isVisible()) {
+            scoreboard.scoreboard.setVisible(true);
+        }
+        if (!isDraw) {
+            JOptionPane.showMessageDialog(null, winner + " Won! Press \"ok\" to exit", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "DRAW!  Press \"ok\" to exit", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+        }
+        System.exit(0);
+    }
+    private void castleAction() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        castle();
         String in = JOptionPane.showInputDialog("Enter Quest Location");
-        if (in.charAt(0) >= 49 && in.charAt(0) <= 57 && in.charAt(1) == ' ' && in.charAt(2) >= 49 && in.charAt(2) <= 57 ) {
+        if (in == null) {
+            error();
+            JOptionPane.showMessageDialog(null, "Please enter correct input", "Empty Input!", JOptionPane.WARNING_MESSAGE);
+        }
+        else if (in.length() < 3) {
+            error();
+            JOptionPane.showMessageDialog(null, "Input must be at least 3 characters", "Wrong Input!", JOptionPane.WARNING_MESSAGE);
+        }
+        else if (in.charAt(0) >= 49 && in.charAt(0) <= 57 && in.charAt(1) == ' ' && in.charAt(2) >= 49 && in.charAt(2) <= 57 ) {
             int x = in.charAt(2) - 49;
             int y = in.charAt(0) - 49;
             if (f.map.map[y][x] > 10 && f.map.map[y][x] < 19 && players[d.turn-1].knowQuestsLoc[f.map.map[y][x] - 11] && questNum == f.map.map[y][x] - 10) {
-                JOptionPane.showMessageDialog(null, "Successfully found quest!", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
+                completeQuest();
+                JOptionPane.showMessageDialog(null, "Successfully found quest! your round is over", "Quest is complete!", JOptionPane.INFORMATION_MESSAGE);
                 changeMoney(100 + questNum * 100);
-                f.map.treasureLoc[questNum-1].setIcon(new ImageIcon("images\\foundQuest.png"));
-                players[d.turn-1].questsFound[questNum-1] = true;
+                f.map.renderCompleteQuest(questNum-1);
+                for (int i = 0; i < 2; i++) {
+                    players[i].questsFound[questNum-1] = true;
+                }
                 questNum++;
                 f.questPanel.changeQuestIcon((byte) questNum);
                 f.map.map[y][x] = 0;
+                players[d.turn-1].completedQuest++;
+                scoreboard.quest[d.turn-1].setText("completed quest: "+ players[d.turn-1].completedQuest);
+                if (questNum == 9) {
+                    finishGame();
+                }
             }
             else {
-                JOptionPane.showMessageDialog(null, "Wrong!", "Wrong!", JOptionPane.ERROR_MESSAGE);
+                error();
+                JOptionPane.showMessageDialog(null, "Wrong! Your round is over.", "Wrong!", JOptionPane.ERROR_MESSAGE);
             }
+            Castle.setEnabled(false);
+            d.dice.setEnabled(false);
+            d.DiceNumber = 0;
+            waitForChangeTurn();
         }
         else {
             JOptionPane.showMessageDialog(null, "Try again!", "Wrong Input", JOptionPane.WARNING_MESSAGE);
@@ -365,75 +471,113 @@ public class Game {
         Castle.setBounds(1111, 330, 100, 100);
         Castle.setEnabled(false);
         Castle.setVisible(false);
-        Castle.addActionListener(e -> castleAction());
-    }
-    private void Fight(int p1,int p2){
-        short x;
-        if (players[p1].power>players[p2].power){
-            x=(short) (((players[p1].power-players[p2].power)*players[p2].money)/(players[p1].power+players[p2].power));
-            players[p1].money+=x;
-            players[p2].money-=x;
-            players[p1].power= (short) (players[p1].power-players[p2].power);
-            players[p2].x=9;
-            players[p2].y=-1;
-            updateIcon(p2);
-            makeFightFrame(p1);
-            scoreboard.Money[p1].setText(players[p1].getName()+" money: "+players[p1].money);
-            scoreboard.Power[p1].setText(players[p1].getName()+" power: "+players[p1].power);
-            scoreboard.Money[p2].setText(players[p2].getName()+" money: "+players[p2].money);
-        } else if (players[p1].power<players[p2].power) {
-            x=(short) (((players[p2].power-players[p1].power)*players[p1].money)/(players[p1].power+players[p2].power));
-            players[p2].money+=x;
-            players[p1].money-=x;
-            players[p2].power= (short) (players[p2].power-players[p1].power);
-            players[p1].x=0;
-            players[p1].y=10;
-            updateIcon(p1);
-            makeFightFrame(p2);
-            scoreboard.Money[p1].setText(players[p1].getName()+" money: "+players[p1].money);
-            scoreboard.Money[p2].setText(players[p2].getName()+" money: "+players[p2].money);
-            scoreboard.Power[p2].setText(players[p2].getName()+" power: "+players[p2].power);
-        }
-    }
-    private void GameLoop(byte playersCount) {
-        d.turn = 1;
-        f.playerTurn.setText("Turn: 1");
-        d.dice.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
-                f.error.setBackground(Color.GREEN);
-                f.error.setText("Go!");
-                d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
-                d.setTarget(d.DiceNumber);
-                d.dice.setIcon(new ImageIcon(d.target));
-                d.dice.setEnabled(false);
-                MovesLeft.setText("Moves Left: " + d.DiceNumber);
-                for (int k = 0 ; k < NotePlaces.length ; k++) {
-                    for (int z = 0; z < NotePlaces[k].length; z++) {
-                        NotePlaces[k][z] = -2;
-                    }
-                }
-                i=0;
+        Castle.addActionListener(e -> {
+            try {
+                castleAction();
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                throw new RuntimeException(ex);
             }
         });
-        MovementActions(playersCount);
     }
-    void questDone() {
-        questNum--;
+    private void killPlayer(int p, short money) {
+        players[p].money-=money;
+        players[p].power=0;
+        players[p].weapon = 0;
+        if (p == 0) {
+            players[p].x = 0;
+            players[p].y = 10;
+        }
+        else {
+            players[p].x = 9;
+            players[p].y = -1;
+        }
+        updateIcon(p);
+        scoreboard.Money[p].setText(players[p].getName()+" money: "+players[p].money);
+        scoreboard.Power[p].setText(players[p].getName()+" power: "+players[p].power);
     }
-    public int getQuestNum() {
-        return questNum;
+    private void FightStats(int winner, int loser) {
+        short x;
+        if (players[winner].power+players[loser].power == 0) {
+            x = (short) 0;
+        }
+        else {
+            x = (short) (((players[winner].power-players[loser].power)*players[loser].money)/(players[winner].power+players[loser].power));
+        }
+        killPlayer(loser, x);
+        players[winner].money+=x;
+        players[winner].power= (short) (players[winner].power-players[loser].power);
+        makeFightFrame(winner);
+        scoreboard.Money[winner].setText(players[winner].getName()+" money: "+players[winner].money);
+        scoreboard.Power[winner].setText(players[winner].getName()+" power: "+players[winner].power);
+    }
+    private void Fight(int p1,int p2) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        fightSound();
+        if (players[p1].power>players[p2].power){
+            FightStats(p1, p2);
+        } else if (players[p1].power<players[p2].power) {
+            FightStats(p2, p1);
+        }
+        else {
+            if (d.turn-1 == p1) {
+                FightStats(p1, p2);
+            }
+            else FightStats(p2, p1);
+        }
+    }
+    private void GameLoop() {
+        d.turn = 1;
+        f.playerTurn.setText("Turn: 1");
+        d.dice.addActionListener(e -> {
+            try {
+                diceSound();
+            } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,30));
+            f.error.setBackground(Color.GREEN);
+            f.error.setText("Go!");
+            d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
+            //d.DiceNumber = 6;
+            d.setTarget(d.DiceNumber);
+            d.dice.setIcon(new ImageIcon(d.target));
+            d.dice.setEnabled(false);
+            MovesLeft.setText("Moves Left: " + d.DiceNumber);
+            for (int[] notePlace : NotePlaces) {
+                Arrays.fill(notePlace, -2);
+            }
+            i=0;
+        });
+        MovementActions();
+    }
+    private void updateStats() {
+        scoreboard.Power[d.turn - 1].setText(players[d.turn - 1].getName() + " power: " + players[d.turn - 1].power);
+        scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+        correspondStats();
+    }
+    private void weaponError(int in) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        if (players[d.turn-1].weapon == in) {
+            marketFrame.errorInfo.setText("Already bought this item");
+        }
+        else if (players[d.turn-1].weapon > in) {
+            marketFrame.errorInfo.setText("Better weapon has been bought");
+        }
+        else {
+            marketFrame.errorInfo.setText("Insufficient fund");
+            error();
+        }
     }
     Game(byte playersCount) {
+        try {
+            S.gameMusic();
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+            throw new RuntimeException(ex);
+        }
         random=new Random();
         scoreboard=new ScoreBoard();
         OpenMarket=new JButton(new ImageIcon("images\\marketB.png"));
         setupPlayers(playersCount);
 
-        for (int k = 0; k < countKnowQuestLoc.length; k++) {
-            countKnowQuestLoc[k]=0;
-        }
+        Arrays.fill(countKnowQuestLoc, (byte) 0);
 
         for (int i = 0 ; i<f.map.crossedPlace.length ; i++){
             for (int j = 0 ; j<f.map.crossedPlace[i].length ; j++){
@@ -450,95 +594,196 @@ public class Game {
         OpenMarket.setVisible(false);
         OpenMarket.setEnabled(false);
         OpenMarket.setOpaque(true);
-        OpenMarket.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                marketFrame.marketframe.setVisible(true);
-                marketFrame.marketframe.setEnabled(true);
-                f.gameWindow.setEnabled(false);
+        OpenMarket.addActionListener(e -> {
+            try {
+                marketSound();
+            } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                throw new RuntimeException(ex);
             }
+            marketFrame.marketFrame.setVisible(true);
+            marketFrame.marketFrame.setEnabled(true);
+            f.gameWindow.setEnabled(false);
         });
 
-        changeTurn=new JButton("Tap to change turn");
+        changeTurn=new JButton(new ImageIcon("images\\turn.png"));
         changeTurn.setBounds(55,480,150,100);
         changeTurn.setVisible(true);
-        changeTurn.setHorizontalAlignment(SwingConstants.CENTER);
         changeTurn.setVisible(false);
         changeTurn.setEnabled(false);
         changeTurn.setOpaque(true);
-        changeTurn.setFont(new Font("Combria", Font.BOLD,13));
-        changeTurn.setBackground(Color.blue);
-        changeTurn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        changeTurn.addActionListener(e -> {
+            if (!Castle.isEnabled()) {
+                Castle.setEnabled(true);
+            }
+            try {
                 FightTester(playersCount);
-                d.dice.setEnabled(true);
-                d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
-                f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
-                f.error.setBackground(Color.orange);
-                f.error.setText("Roll the dice!");
-                MovesLeft.setText("Roll the dice");
-                f.map.LootHider(d.turn-1);
-                checkCastleEnabled();
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                throw new RuntimeException(ex);
+            }
+            d.dice.setEnabled(true);
+            d.dice.setIcon(new ImageIcon("images\\FirstDice.png"));
+            f.error.setFont(new Font("Comic Sans MS", Font.PLAIN,20));
+            f.error.setBackground(Color.orange);
+            f.error.setText("Roll the dice!");
+            MovesLeft.setText("Roll the dice");
+            f.map.LootHider(d.turn-1);
+            checkCastleEnabled();
+            checkMarketEnabled();
+            try {
                 turnFinished();
-                f.map.LootShower(d.turn-1);
-///////////////////////////////////////////////////////////////////////////////////                for (int k = 0; ; k++) {
-//                    setvisible label for treasure
-//                }
-
-                //f.showCheckMarks();
-                changeTurn.setEnabled(false);
-                changeTurn.setVisible(false);
-                for (int k = 0 ; k < 6 && NotePlaces[k][0]!=-2; k++) {
-                    if (NotePlaces[k][0] > -1 && NotePlaces[k][0] < 10 && NotePlaces[k][1] < 10 && NotePlaces[k][1] > -1) {
-                        f.map.crossedPlace[NotePlaces[k][0]][NotePlaces[k][1]].setVisible(false);
-                    }
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                throw new RuntimeException(ex);
+            }
+            f.map.LootShower(d.turn-1);
+            changeTurn.setEnabled(false);
+            changeTurn.setVisible(false);
+            for (int k = 0 ; k < 6 && NotePlaces[k][0]!=-2; k++) {
+                if (NotePlaces[k][0] > -1 && NotePlaces[k][0] < 10 && NotePlaces[k][1] < 10 && NotePlaces[k][1] > -1) {
+                    f.map.crossedPlace[NotePlaces[k][0]][NotePlaces[k][1]].setVisible(false);
                 }
             }
         });
         marketFrame.PowerButton.addActionListener(e -> {
             if (players[d.turn-1].money>=50) {
-                players[d.turn - 1].power += 40;
+                players[d.turn - 1].power += 5;
                 players[d.turn - 1].money -= 50;
-                marketFrame.errorInfo.setText("you got (+40) power.");
-                scoreboard.Power[d.turn - 1].setText(players[d.turn - 1].getName() + " power: " + players[d.turn - 1].power);
-                scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+                marketFrame.errorInfo.setText("you got +5 power.");
+                try {
+                    coins();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                updateStats();
             }
             else {
-                marketFrame.errorInfo.setText("can't buy power!you need more money.");
+                marketFrame.errorInfo.setText("Insufficient fund");
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
-        marketFrame.QuestButton.addActionListener(e -> {
-            if (countKnowQuestLoc[d.turn-1]<8 && players[d.turn-1].money>=250) {
-                int quest = random.nextInt(8) + 11;
-                for (int k = 0; k < j; k++) {
-                    if (quest == SaveRandomQuests[k]) {
-                        quest = random.nextInt(8) + 11;
-                        k = -1;
+        marketFrame.weapons[0].addActionListener(e -> {
+            if (players[d.turn-1].money>=50 && players[d.turn-1].weapon < 1) {
+                players[d.turn-1].weapon = 1;
+                players[d.turn - 1].power = 10;
+                players[d.turn - 1].money -= 50;
+                successfulPurchase();
+            }
+            else {
+                try {
+                    weaponError(1);
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        marketFrame.weapons[1].addActionListener(e -> {
+            if (players[d.turn-1].money>=150 && players[d.turn-1].weapon < 2) {
+                players[d.turn-1].weapon = 2;
+                players[d.turn - 1].power = 40;
+                players[d.turn - 1].money -= 150;
+                successfulPurchase();
+            }
+            else {
+                try {
+                    weaponError(2);
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        marketFrame.weapons[2].addActionListener(e -> {
+            if (players[d.turn-1].money>=400 && players[d.turn-1].weapon < 3) {
+                players[d.turn-1].weapon = 3;
+                players[d.turn - 1].power = 120;
+                players[d.turn - 1].money -= 400;
+                successfulPurchase();
+            }
+            else {
+                try {
+                    weaponError(3);
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        marketFrame.weapons[3].addActionListener(e -> {
+            if (players[d.turn-1].money>=1000 && players[d.turn-1].weapon < 4) {
+                players[d.turn-1].weapon = 4;
+                players[d.turn - 1].power = 350;
+                players[d.turn - 1].money -= 1000;
+                successfulPurchase();
+            }
+            else {
+                try {
+                    weaponError(4);
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        marketFrame.QuestButton.addActionListener(e-> {
+            if(countKnowQuestLoc[d.turn-1]>=8){
+                marketFrame.errorInfo.setText("You do know all of quest locations");
+            } else if (players[d.turn-1].money<250) {
+                marketFrame.errorInfo.setText("Insufficient fund");
+                try {
+                    error();
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            else {
+                Random r = new Random();
+                int x;
+                int total = 0;
+                boolean control = true;
+                boolean mode = true;
+                while (control) {
+                    total++;
+                    if (total == 50) {
+                        control = false;
+                        marketFrame.errorInfo.setText("UNKNOWN ERROR");
+                    }
+                    x = r.nextInt(8-questNum+1) + questNum - 1;
+                    if (!players[d.turn-1].knowQuestsLoc[x] && !players[d.turn-1].boughtLocation[x]) {
+                        control = false;
+                        players[d.turn - 1].boughtLocation[x] = true;
+                        f.map.toggleQuestLoc(players[d.turn-1], false);
+                        //FindQuest(quest);
+                        countKnowQuestLoc[d.turn - 1]++;
+                        players[d.turn - 1].money -= 250;
+                        scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+                        successfulPurchase();
+                        correspondStats();
+                    }
+                    else if (mode) {
+                        mode = false;
+                        int count = 0;
+                        for (int i = 0; i < 8; i++) {
+                            if (players[d.turn-1].knowQuestsLoc[i]) {
+                                count++;
+                            }
+                            else if (players[d.turn-1].boughtLocation[i]) {
+                                count++;
+                            }
+                        }
+                        if (count == 9 - questNum) {
+                            marketFrame.errorInfo.setText("You do know all of quest locations");
+                            control = false;
+                        }
                     }
                 }
-                SaveRandomQuests[j] = quest;
-                players[d.turn - 1].knowQuestsLoc[countKnowQuestLoc[d.turn - 1]] = true;
-                f.map.toggleQuestLoc(players[d.turn-1], false);
-                //FindQuest(quest);
-                countKnowQuestLoc[d.turn - 1]++;
-                j++;
-                players[d.turn - 1].money -= 250;
-                scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
-                marketFrame.errorInfo.setText("you got one of treasure locations.");
-            }
-            else if(countKnowQuestLoc[d.turn-1]>=8){
-                marketFrame.errorInfo.setText("you know all of quest locations");
-            } else if (players[d.turn-1].money<250) {
-                marketFrame.errorInfo.setText("can't buy!you need more money");
             }
         });
         marketFrame.Close.addActionListener(e -> {
             f.gameWindow.setEnabled(true);
-            marketFrame.marketframe.setVisible(false);
-            marketFrame.errorInfo.setText(":-)");
+            marketFrame.marketFrame.setVisible(false);
+            marketFrame.errorInfo.setText("Waiting for Action");
         });
-
+        f.toggleScoreboard.addActionListener(e-> scoreboard.scoreboard.setVisible(!scoreboard.scoreboard.isVisible())) ;
         MovesLeft=new JLabel();
         MovesLeft.setBounds(75,435,100,30);
         MovesLeft.setText("Roll the dice");
@@ -557,6 +802,6 @@ public class Game {
         setupCastleButton();
         f.jl.add(Castle, JLayeredPane.MODAL_LAYER);
         f.jl.add(OpenMarket,JLayeredPane.MODAL_LAYER);
-        GameLoop(playersCount);
+        GameLoop();
     }
 }
