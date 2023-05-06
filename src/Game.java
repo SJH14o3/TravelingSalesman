@@ -135,6 +135,7 @@ public class Game extends Sound{
     }
     private void hitTrap() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         boolean mode = true;
+        new TrapAnimation();
         trapSound();
         if (players[d.turn-1].money < 50 && players[d.turn-1].power > 10) {
             trapPower();
