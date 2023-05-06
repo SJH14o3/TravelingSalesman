@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Game extends Sound{
+    private static Game game=new Game((byte) 2);
     private final boolean[] canMove = {true, true, true, true};
     byte[] countKnowQuestLoc=new byte[4];
     int i=0;
@@ -19,12 +20,16 @@ public class Game extends Sound{
     JOptionPane FightWinner;
     JButton changeTurn, Castle, OpenMarket;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}} ;
-    GameWindow f=new GameWindow();
+//    GameWindow f=new GameWindow();
+    GameWindow f=GameWindow.getF();
     MarketFrame marketFrame=new MarketFrame();
     Dice d=new Dice(f.jl);
     Walls walls = new Walls(f.jl);
     Sound S = new Sound();
     private int questNum = 1;
+    public static Game getGame(){
+        return game;
+    }
     void makeFightFrame(int p){
         FightWinner=new JOptionPane();
         FightWinner.setBounds(730,330,400,250);
@@ -118,6 +123,7 @@ public class Game extends Sound{
         changeMoney(70);
         f.map.map[players[d.turn-1].x][players[d.turn-1].y]=0; //null
         coins();
+        new LootAnimation(d.turn);
     }
     private void trapMoney() {
         f.TrapDialog(players[d.turn-1].money/10, "Money!");
@@ -129,6 +135,7 @@ public class Game extends Sound{
     }
     private void hitTrap() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         boolean mode = true;
+        new TrapAnimation();
         trapSound();
         if (players[d.turn-1].money < 50 && players[d.turn-1].power > 10) {
             trapPower();
@@ -511,20 +518,19 @@ public class Game extends Sound{
         scoreboard.Power[winner].setText(players[winner].getName()+" power: "+players[winner].power);
     }
     private void Fight(int p1,int p2) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        new FightAnimation();
         fightSound();
-        if (players[p1].power>players[p2].power){
-            FightStats(p1, p2);
-        } else if (players[p1].power<players[p2].power) {
-            FightStats(p2, p1);
-        }
-        else {
-            if (d.turn-1 == p1) {
+            if (players[p1].power > players[p2].power) {
                 FightStats(p1, p2);
+            } else if (players[p1].power < players[p2].power) {
+                FightStats(p2, p1);
+            } else {
+                if (d.turn - 1 == p1) {
+                    FightStats(p1, p2);
+                } else FightStats(p2, p1);
             }
-            else FightStats(p2, p1);
-        }
     }
-    private void GameLoop() {
+    private void GameLoop(){
         d.turn = 1;
         f.playerTurn.setText("Turn: 1");
         d.dice.addActionListener(e -> {
@@ -537,7 +543,7 @@ public class Game extends Sound{
             f.error.setBackground(Color.GREEN);
             f.error.setText("Go!");
             d.DiceNumber = (byte) ((byte) (Math.random() * d.rang) + d.min);
-            //d.DiceNumber = 6;
+            //d.DiceNumber = 1;
             d.setTarget(d.DiceNumber);
             d.dice.setIcon(new ImageIcon(d.target));
             d.dice.setEnabled(false);
