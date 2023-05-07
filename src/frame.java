@@ -4,8 +4,15 @@ import javax.swing.*;
 import java.io.IOException;
 
 public class frame{
-    public JFrame f;
+    public static JFrame f;
+    public static JLayeredPane jl = new JLayeredPane();
     private final Sound S = new Sound();
+    int i = 0;
+    Timer timer;
+    JLabel b = new JLabel(new ImageIcon("images\\black.jpg"));
+    JLabel w = new JLabel(new ImageIcon("images\\white.png"));
+    JLabel[] intro = {new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png")), new JLabel(new ImageIcon("images\\intro.png"))};
+    JLabel[] flash = {new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png")), new JLabel(new ImageIcon("images\\flash.png"))};
     frame(){ //menu
         try {
             S.menuMusic();
@@ -16,9 +23,11 @@ public class frame{
         l.setBounds(0,0,1300,800);
         JButton newGame = new JButton(new ImageIcon("images\\newGame.png"));
         newGame.setBounds(577,450,130,75);
+        newGame.setEnabled(true);
 
         JButton guide = new JButton(new ImageIcon("images\\guide.png"));
         guide.setBounds(577,530,130,75);
+        guide.setEnabled(false);
 
         f =new JFrame("Traveling Salesman");
         f.setBounds(240,5,1300,800);
@@ -26,17 +35,66 @@ public class frame{
         f.setLayout(null);
         f.setVisible(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JLabel x = new JLabel(new ImageIcon("images\\black.jpg"));
-        f.add(x);
-        x.setBounds(0, 0, 1300, 800);
 
+        jl.setBounds(0,0, 1300, 800);
+        jl.setLayout(null);
 
+        b.setBounds(0,0, 1300, 800);
+        w.setBounds(0,0,1300,800);
+        jl.add(b, JLayeredPane.MODAL_LAYER);
+        jl.add(w, JLayeredPane.DRAG_LAYER);
+        w.setVisible(false);
+        for (int i = 0; i < intro.length; i++) {
+            intro[i].setBounds(0,0, 1300, 800);
+            intro[i].setVisible(false);
+            flash[i].setBounds(0,0, 1300, 800);
+            flash[i].setVisible(false);
+            jl.add(intro[i], JLayeredPane.POPUP_LAYER);
+            jl.add(flash[i], JLayeredPane.POPUP_LAYER);
+        }
 
-        f.add(newGame);
-        f.add(guide);
-        f.add(l);
+        jl.add(newGame, JLayeredPane.PALETTE_LAYER);
+        jl.add(guide, JLayeredPane.PALETTE_LAYER);
+
+        jl.add(l, JLayeredPane.DEFAULT_LAYER);
         ImageIcon I = new ImageIcon("images\\icon.png");
         f.setIconImage(I.getImage());
+        f.add(jl);
+
+        timer = new Timer(10,  e-> {
+            if (i < 67 && i>23) {
+                if (i % 6 == 0) {
+                    intro[(i/6)-2].setVisible(true);
+                }
+            }
+            else if (i < 251 && i > 240) {
+                if (i == 241) {
+                    w.setVisible(true);
+                }
+                flash[i-241].setVisible(true);
+            }
+            else if (i < 286 && i > 264) {
+                if (i == 266) {
+                    b.setVisible(false);
+                    w.setVisible(false);
+                    newGame.setEnabled(true);
+                    guide.setEnabled(true);
+                    for (int j = 0; j < intro.length; j++) {
+                        intro[j].setVisible(false);
+                    }
+                }
+                if (i % 2 == 0) {
+                    flash[(i/2)-133].setVisible(false);
+                }
+
+            }
+
+            if (i > 287) {
+                timer.stop();
+            }
+            i++;
+        });
+        timer.start();
 
 
         guide.addActionListener(e-> {

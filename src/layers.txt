@@ -15,11 +15,16 @@
 		money
 		money_icon
 		who_turn_is
+		scoreboard_button
+		market_button
+		castle_button
+		change_turn_button
+		this_round_places
 	}
 	"PopUp": {
 		Quest_Icon
 		Quest_Text
-		Movement_Button
+		Movement_Buttons
 		Player_Icons
 		Walls
 	}

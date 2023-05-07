@@ -5,6 +5,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game extends Sound{
     private static Game game=new Game((byte) 2);
@@ -27,6 +29,7 @@ public class Game extends Sound{
     Walls walls = new Walls(f.jl);
     Sound S = new Sound();
     private int questNum = 1;
+    Timer timer = null;
     public static Game getGame(){
         return game;
     }
@@ -134,35 +137,46 @@ public class Game extends Sound{
         changePower(-players[d.turn-1].power/10);
     }
     private void hitTrap() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        boolean mode = true;
+        AtomicBoolean mode = new AtomicBoolean(true);
         new TrapAnimation();
         trapSound();
-        if (players[d.turn-1].money < 50 && players[d.turn-1].power > 10) {
-            trapPower();
-        }
-        else if (players[d.turn-1].power < 10 && players[d.turn-1].money > 50) {
-            trapMoney();
-        }
-        else if (players[d.turn-1].power < 10 && players[d.turn-1].money < 50) {
-            mode = false;
-            f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
-            killPlayer(d.turn-1, (short) 0);
-            JOptionPane.showMessageDialog(null, "You stepped on a trap, without having\nenough money and power. so you died!", "Trap killed You", JOptionPane.ERROR_MESSAGE);
-            d.DiceNumber = 0;
-            waitForChangeTurn();
-        }
-        else {
-            int r = random.nextInt(2);
-            if (r == 0) {
-                trapMoney();
-            }
-            else {
-                trapPower();
-            }
-        }
-        if (mode) {
-            f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
-        }
+
+        final int[] k = {0};
+        timer = new Timer(100, e-> {
+                if (k[0] > 11) {
+                    timer.stop();
+                    if (players[d.turn-1].money < 50 && players[d.turn-1].power > 10) {
+                        trapPower();
+                    }
+                    else if (players[d.turn-1].power < 10 && players[d.turn-1].money > 50) {
+                        trapMoney();
+                    }
+                    else if (players[d.turn-1].power < 10 && players[d.turn-1].money < 50) {
+                        mode.set(false);
+                        f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+                        killPlayer(d.turn-1, (short) 0);
+                        JOptionPane.showMessageDialog(null, "You stepped on a trap, without having\nenough money and power. so you died!", "Trap killed You", JOptionPane.ERROR_MESSAGE);
+                        d.DiceNumber = 0;
+                        waitForChangeTurn();
+                    }
+                    else {
+                        int r = random.nextInt(2);
+                        if (r == 0) {
+                            trapMoney();
+                        }
+                        else {
+                            trapPower();
+                        }
+                    }
+                    if (mode.get()) {
+                        f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+                    }
+                }
+            k[0]++;
+        });
+        timer.start();
+
+
     }
     private void checkLocation(boolean startRound) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         if (players[d.turn-1].x > -1 && players[d.turn-1].y > -1 && players[d.turn-1].y < 10 && players[d.turn-1].x < 10) {
@@ -459,6 +473,16 @@ public class Game extends Sound{
                 if (questNum == 9) {
                     finishGame();
                 }
+                else {
+                    if (d.turn == 1){
+                        players[d.turn-1].x=0;
+                        players[d.turn-1].y=10;
+                    } else {
+                        players[d.turn-1].x=9;
+                        players[d.turn-1].y=-1;
+                    }
+                    updateIcon(d.turn-1);
+                }
             }
             else {
                 error();
@@ -520,15 +544,24 @@ public class Game extends Sound{
     private void Fight(int p1,int p2) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         new FightAnimation();
         fightSound();
-            if (players[p1].power > players[p2].power) {
-                FightStats(p1, p2);
-            } else if (players[p1].power < players[p2].power) {
-                FightStats(p2, p1);
-            } else {
-                if (d.turn - 1 == p1) {
+        AtomicInteger k = new AtomicInteger();
+        timer = new Timer(100, e->{
+            System.out.println(k.get());
+            if (k.get() > 5) {
+                if (players[p1].power > players[p2].power) {
                     FightStats(p1, p2);
-                } else FightStats(p2, p1);
+                } else if (players[p1].power < players[p2].power) {
+                    FightStats(p2, p1);
+                } else {
+                    if (d.turn - 1 == p1) {
+                        FightStats(p1, p2);
+                    } else FightStats(p2, p1);
+                }
+                timer.stop();
             }
+            k.getAndIncrement();
+        });
+        timer.start();
     }
     private void GameLoop(){
         d.turn = 1;
