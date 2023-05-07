@@ -23,7 +23,7 @@ public class frame{
         l.setBounds(0,0,1300,800);
         JButton newGame = new JButton(new ImageIcon("images\\newGame.png"));
         newGame.setBounds(577,450,130,75);
-        newGame.setEnabled(true);
+        newGame.setEnabled(false);
 
         JButton guide = new JButton(new ImageIcon("images\\guide.png"));
         guide.setBounds(577,530,130,75);
