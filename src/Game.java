@@ -10,7 +10,7 @@ public class Game extends Sound{
     private static Game game=new Game((byte) 2);
     private final boolean[] canMove = {true, true, true, true};
     byte[] countKnowQuestLoc=new byte[4];
-    int i=0;
+    int i=0 , finaly;
     private final Random random;
     private final JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
     Player[] players;
@@ -422,14 +422,14 @@ public class Game extends Sound{
             scoreboard.quest[i].setText("completed quest: "+0);
         }
     }
-    private void finishGame() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+    private void finishGame(String winner,boolean isDraw) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         S.gameFinished();
         scoreboard.stopwatch.timer.stop();
-        String winner = "";
-        boolean isDraw = false;
-        if (players[0].completedQuest > players[1].completedQuest) winner = "player 1";
-        else if (players[1].completedQuest > players[0].completedQuest) winner = "player 2";
-        else isDraw = true;
+//        String winner = "";
+//        boolean isDraw = false;
+//        if (players[0].completedQuest > players[1].completedQuest) winner = "player 1";
+//        else if (players[1].completedQuest > players[0].completedQuest) winner = "player 2";
+//        else isDraw = true;
         if (!scoreboard.scoreboard.isVisible()) {
             scoreboard.scoreboard.setVisible(true);
         }
@@ -439,7 +439,6 @@ public class Game extends Sound{
         else {
             JOptionPane.showMessageDialog(null, "DRAW!  Press \"ok\" to exit", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
         }
-        System.exit(0);
     }
     private void castleAction() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         castle();
@@ -469,7 +468,20 @@ public class Game extends Sound{
                 players[d.turn-1].completedQuest++;
                 scoreboard.quest[d.turn-1].setText("completed quest: "+ players[d.turn-1].completedQuest);
                 if (questNum == 9) {
-                    finishGame();
+                    String winner = "";
+                    boolean isDraw = false;
+                    if (players[0].completedQuest > players[1].completedQuest) winner = "player 1";
+                    else if (players[1].completedQuest > players[0].completedQuest) winner = "player 2";
+                    else isDraw = true;
+                    if (winner == "player 1"){
+                        finaly = 1;
+                    } else if (winner == "player 2") {
+                        finaly = 2;
+                    } else if (isDraw == true) {
+                        finaly = 0;
+                    }
+                    new winnerAnimation(finaly);
+                    finishGame(winner,isDraw);
                 }
                 else {
                     if (d.turn == 1){
@@ -604,6 +616,7 @@ public class Game extends Sound{
         }
     }
     Game(byte playersCount) {
+        //new winnerAnimation(0);
         try {
             S.gameMusic();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
