@@ -5,8 +5,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game extends Sound{
     private static Game game=new Game((byte) 2);
@@ -137,7 +135,7 @@ public class Game extends Sound{
         changePower(-players[d.turn-1].power/10);
     }
     private void hitTrap() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        AtomicBoolean mode = new AtomicBoolean(true);
+        boolean[] mode = {true};
         new TrapAnimation();
         trapSound();
 
@@ -152,7 +150,7 @@ public class Game extends Sound{
                         trapMoney();
                     }
                     else if (players[d.turn-1].power < 10 && players[d.turn-1].money < 50) {
-                        mode.set(false);
+                        mode[0] = false;
                         f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
                         killPlayer(d.turn-1, (short) 0);
                         JOptionPane.showMessageDialog(null, "You stepped on a trap, without having\nenough money and power. so you died!", "Trap killed You", JOptionPane.ERROR_MESSAGE);
@@ -168,7 +166,7 @@ public class Game extends Sound{
                             trapPower();
                         }
                     }
-                    if (mode.get()) {
+                    if (mode[0]) {
                         f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
                     }
                 }
@@ -544,10 +542,10 @@ public class Game extends Sound{
     private void Fight(int p1,int p2) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         new FightAnimation();
         fightSound();
-        AtomicInteger k = new AtomicInteger();
+        final int[] k = {0};
         timer = new Timer(100, e->{
-            System.out.println(k.get());
-            if (k.get() > 5) {
+            System.out.println(k[0]);
+            if (k[0] > 5) {
                 if (players[p1].power > players[p2].power) {
                     FightStats(p1, p2);
                 } else if (players[p1].power < players[p2].power) {
@@ -559,7 +557,7 @@ public class Game extends Sound{
                 }
                 timer.stop();
             }
-            k.getAndIncrement();
+            k[0]++;
         });
         timer.start();
     }
