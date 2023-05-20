@@ -473,11 +473,11 @@ public class Game extends Sound{
                     if (players[0].completedQuest > players[1].completedQuest) winner = "player 1";
                     else if (players[1].completedQuest > players[0].completedQuest) winner = "player 2";
                     else isDraw = true;
-                    if (winner == "player 1"){
+                    if (winner.equals("player 1")){
                         finaly = 1;
-                    } else if (winner == "player 2") {
+                    } else if (winner.equals("player 2")) {
                         finaly = 2;
-                    } else if (isDraw == true) {
+                    } else if (isDraw) {
                         finaly = 0;
                     }
                     new winnerAnimation(finaly);
@@ -795,7 +795,7 @@ public class Game extends Sound{
                     total++;
                     if (total == 50) {
                         control = false;
-                        marketFrame.errorInfo.setText("UNKNOWN ERROR");
+                        marketFrame.errorInfo.setText("You do know all of quest locations");
                     }
                     x = r.nextInt(8-questNum+1) + questNum - 1;
                     if (!players[d.turn-1].knowQuestsLoc[x] && !players[d.turn-1].boughtLocation[x]) {
