@@ -115,26 +115,40 @@ public class Map extends JPanel {
         treasureIcon[count].repaint();
     }
     public void markTrap(int y, int x, int turn) {
-        for (Trap trap : traps) {
-            if (trap.x == x && trap.y == y) {
-                trap.showTrap[turn] = true;
+        for (int i = 0; i < traps.length; i++) {
+            if (traps[i].x == x && traps[i].y == y) {
+                traps[i].showTrap[turn] = true;
+                System.out.println("trap #" + (i+1) + " has been marked");
                 return;
             }
         }
+
     }
     public void showTraps(int turn) {
         hideTraps();
-        for (Trap trap : traps) {
-            if (trap.showTrap[turn]) {
-                trap.icon.setVisible(true);
+        boolean active = false;
+        for (int i = 0; i < traps.length; i++) {
+            if (traps[i].showTrap[turn]) {
+                traps[i].icon.setVisible(true);
+                System.out.println("trap #" + (i+1) + " is set to be visible");
+                active = true;
             }
+        }
+        if (active) {
+            System.out.print("\n");
         }
     }
     public void hideTraps() {
-        for (Trap trap : traps) {
-            if (trap.icon.isVisible()) {
-                trap.icon.setVisible(false);
+        boolean active = false;
+        for (int i = 0; i < traps.length; i++) {
+            if (traps[i].icon.isVisible()) {
+                traps[i].icon.setVisible(false);
+                System.out.println("trap #" + (i+1) + " is set to be hidden");
+                active = true;
             }
+        }
+        if (active) {
+            System.out.print("\n");
         }
     }
     private void setCastle() {
@@ -166,6 +180,7 @@ public class Map extends JPanel {
             } while(checkAround(x, y, 3) || isEmpty(x, y));
             map[x][y] = 3;
             traps[i] = new Trap(y, x);
+            System.out.println("trap #" + (i+1) + " at: " + y + " " + x);
         }
     }
     private void setupCrossPlaces() {
@@ -269,6 +284,6 @@ public class Map extends JPanel {
         LootDivide();
         add(border);
         setOpaque(false);
-        //printMap();
+        printMap();
     }
 }
