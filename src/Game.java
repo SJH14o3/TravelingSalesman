@@ -154,41 +154,46 @@ public class Game extends Sound{
         changePower(-players[d.turn-1].power/10);
     }
     private void hitTrap() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        boolean[] mode = {true};
         new TrapAnimation();
         trapSound();
+        f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+        System.out.println("hit a trap!");
+        System.out.println("Dice number: " + d.DiceNumber);
+        System.out.println("PLayer turn: " +d.turn);
 
         final int[] k = {0};
         timer = new Timer(100, e-> {
-                if (k[0] > 11) {
-                    timer.stop();
-                    if (players[d.turn-1].money < 50 && players[d.turn-1].power > 10) {
-                        trapPower();
-                    }
-                    else if (players[d.turn-1].power < 10 && players[d.turn-1].money > 50) {
+            if (k[0] > 11) {
+                timer.stop();
+                if (players[d.turn-1].money < 50 && players[d.turn-1].power > 10) {
+                    trapPower();
+                    System.out.println("low money");
+                }
+                else if (players[d.turn-1].power < 10 && players[d.turn-1].money > 50) {
+                    trapMoney();
+                    System.out.println("low power");
+                }
+                else if (players[d.turn-1].power < 10 && players[d.turn-1].money < 50) {
+                    System.out.println("low money and power (death)");
+                    killPlayer(d.turn-1, (short) 0);
+                    JOptionPane.showMessageDialog(null, "You stepped on a trap, without having\nenough money and power. so you died!", "Trap killed You", JOptionPane.ERROR_MESSAGE);
+                    d.DiceNumber = 0;
+                    waitForChangeTurn();
+                }
+                else {
+                    System.out.println("enough money and power");
+                    int r = random.nextInt(2);
+                    if (r == 0) {
                         trapMoney();
-                    }
-                    else if (players[d.turn-1].power < 10 && players[d.turn-1].money < 50) {
-                        mode[0] = false;
-                        f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
-                        killPlayer(d.turn-1, (short) 0);
-                        JOptionPane.showMessageDialog(null, "You stepped on a trap, without having\nenough money and power. so you died!", "Trap killed You", JOptionPane.ERROR_MESSAGE);
-                        d.DiceNumber = 0;
-                        waitForChangeTurn();
+                        System.out.println("trap money");
                     }
                     else {
-                        int r = random.nextInt(2);
-                        if (r == 0) {
-                            trapMoney();
-                        }
-                        else {
-                            trapPower();
-                        }
-                    }
-                    if (mode[0]) {
-                        f.map.markTrap(players[d.turn-1].x, players[d.turn-1].y, d.turn-1);
+                        trapPower();
+                        System.out.println("trap power");
                     }
                 }
+                System.out.print("\n");
+            }
             k[0]++;
         });
         timer.start();
