@@ -10,7 +10,7 @@ public class Map extends JPanel {
     JLabel border = new JLabel(new ImageIcon("images\\border.png"));
     JLabel[][] crossedPlace=new JLabel[10][10];
     JLabel[] markets=new JLabel[5];
-    JLabel[][] loots=new JLabel[13][2];
+    JLabel[][] loots=new JLabel[13][2]; //13 loots and 2 players
     JPanel[] treasureLoc = new JPanel[8];
     JLabel[] treasureIcon = new JLabel[8];
     JLabel[] unknownQuest = new JLabel[8];

@@ -9,7 +9,7 @@ import java.util.Random;
 public class Game extends Sound{
     private static Game game=new Game((byte) 2);
     private final boolean[] canMove = {true, true, true, true};
-    byte[] countKnowQuestLoc=new byte[4];
+    byte[] countKnowQuestLoc=new byte[4]; //4 for maximum 4 players
     int i=0 , finaly;
     private final Random random;
     private final JLabel[] icons = {new JLabel(new ImageIcon("images\\icon1.png")), new JLabel(new ImageIcon("images\\icon2.png"))};
@@ -20,7 +20,7 @@ public class Game extends Sound{
     JOptionPane FightWinner;
     JButton changeTurn, Castle, OpenMarket;
     int[][] NotePlaces={{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2},{-2,-2}} ;
-//    GameWindow f=new GameWindow();
+
     GameWindow f=GameWindow.getF();
     MarketFrame marketFrame=new MarketFrame();
     Dice d=new Dice(f.jl);
@@ -96,6 +96,25 @@ public class Game extends Sound{
             }
         }
     }
+    private void Fight(int p1,int p2) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        new FightAnimation();
+        fightSound();
+        timer = new Timer(500, e->{
+            if (players[p1].power > players[p2].power) {
+                    FightStats(p1, p2);
+                } else if (players[p1].power < players[p2].power) {
+                    FightStats(p2, p1);
+                } else {
+                    if (d.turn - 1 == p1) {
+                        FightStats(p1, p2);
+                    } else FightStats(p2, p1);
+                }
+                timer.stop();
+
+        });
+        timer.start();
+    }
+
     private void checkCastleEnabled() {
         if (Castle.isEnabled()) {
             Castle.setVisible(false);
@@ -551,27 +570,35 @@ public class Game extends Sound{
         scoreboard.Money[winner].setText(players[winner].getName()+" money: "+players[winner].money);
         scoreboard.Power[winner].setText(players[winner].getName()+" power: "+players[winner].power);
     }
-    private void Fight(int p1,int p2) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        new FightAnimation();
-        fightSound();
-        final int[] k = {0};
-        timer = new Timer(100, e->{
-            System.out.println(k[0]);
-            if (k[0] > 5) {
-                if (players[p1].power > players[p2].power) {
-                    FightStats(p1, p2);
-                } else if (players[p1].power < players[p2].power) {
-                    FightStats(p2, p1);
-                } else {
-                    if (d.turn - 1 == p1) {
-                        FightStats(p1, p2);
-                    } else FightStats(p2, p1);
-                }
-                timer.stop();
+
+    private void updateStats() {
+        scoreboard.Power[d.turn - 1].setText( " power: " + players[d.turn - 1].power);
+        scoreboard.Money[d.turn - 1].setText( " money: " + players[d.turn - 1].money);
+        correspondStats();
+    }
+    private void weaponError(int in) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        if (players[d.turn-1].weapon == in) {
+            marketFrame.errorInfo.setText("Already bought this item");
+        }
+        else if (players[d.turn-1].weapon > in) {
+            marketFrame.errorInfo.setText("Better weapon has been bought");
+        }
+        else {
+            marketFrame.errorInfo.setText("Insufficient fund");
+            error();
+        }
+    }
+    private void MakeCrossedPlaceLabels(){
+        for (int i = 0 ; i<f.map.crossedPlace.length ; i++){
+            for (int j = 0 ; j<f.map.crossedPlace[i].length ; j++){
+                f.map.crossedPlace[i][j]=new JLabel(cross);
+                f.map.crossedPlace[i][j].setBounds(318 + j*(65), 67 + i*(65) , 65, 65);
+                f.map.crossedPlace[i][j].setOpaque(false);
+                f.map.crossedPlace[i][j].setVisible(false);
+                f.gameWindow.add(f.map.crossedPlace[i][j]);
+                f.jl.add(f.map.crossedPlace[i][j],JLayeredPane.MODAL_LAYER);
             }
-            k[0]++;
-        });
-        timer.start();
+        }
     }
     private void GameLoop(){
         d.turn = 1;
@@ -598,23 +625,6 @@ public class Game extends Sound{
         });
         MovementActions();
     }
-    private void updateStats() {
-        scoreboard.Power[d.turn - 1].setText(players[d.turn - 1].getName() + " power: " + players[d.turn - 1].power);
-        scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
-        correspondStats();
-    }
-    private void weaponError(int in) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        if (players[d.turn-1].weapon == in) {
-            marketFrame.errorInfo.setText("Already bought this item");
-        }
-        else if (players[d.turn-1].weapon > in) {
-            marketFrame.errorInfo.setText("Better weapon has been bought");
-        }
-        else {
-            marketFrame.errorInfo.setText("Insufficient fund");
-            error();
-        }
-    }
     Game(byte playersCount) {
         //new winnerAnimation(0);
         try {
@@ -629,16 +639,7 @@ public class Game extends Sound{
 
         Arrays.fill(countKnowQuestLoc, (byte) 0);
 
-        for (int i = 0 ; i<f.map.crossedPlace.length ; i++){
-            for (int j = 0 ; j<f.map.crossedPlace[i].length ; j++){
-                f.map.crossedPlace[i][j]=new JLabel(cross);
-                f.map.crossedPlace[i][j].setBounds(318 + j*(65), 67 + i*(65) , 65, 65);
-                f.map.crossedPlace[i][j].setOpaque(false);
-                f.map.crossedPlace[i][j].setVisible(false);
-                f.gameWindow.add(f.map.crossedPlace[i][j]);
-                f.jl.add(f.map.crossedPlace[i][j],JLayeredPane.MODAL_LAYER);
-            }
-        }
+        MakeCrossedPlaceLabels(); //making labels for crossed places
 
         OpenMarket.setBounds(1111,330,100,100);
         OpenMarket.setVisible(false);
@@ -655,7 +656,7 @@ public class Game extends Sound{
             f.gameWindow.setEnabled(false);
         });
 
-        changeTurn=new JButton(new ImageIcon("images\\turn.png"));
+        changeTurn = new JButton(new ImageIcon("images\\turn.png"));
         changeTurn.setBounds(55,480,150,100);
         changeTurn.setVisible(true);
         changeTurn.setVisible(false);
@@ -776,7 +777,7 @@ public class Game extends Sound{
         });
         marketFrame.QuestButton.addActionListener(e-> {
             if(countKnowQuestLoc[d.turn-1]>=8){
-                marketFrame.errorInfo.setText("You do know all of quest locations");
+                marketFrame.errorInfo.setText("You know all of quest locations");
             } else if (players[d.turn-1].money<250) {
                 marketFrame.errorInfo.setText("Insufficient fund");
                 try {
@@ -795,17 +796,16 @@ public class Game extends Sound{
                     total++;
                     if (total == 50) {
                         control = false;
-                        marketFrame.errorInfo.setText("You do know all of quest locations");
+                        marketFrame.errorInfo.setText("You know all of quest locations");
                     }
                     x = r.nextInt(8-questNum+1) + questNum - 1;
                     if (!players[d.turn-1].knowQuestsLoc[x] && !players[d.turn-1].boughtLocation[x]) {
                         control = false;
                         players[d.turn - 1].boughtLocation[x] = true;
                         f.map.toggleQuestLoc(players[d.turn-1], false);
-                        //FindQuest(quest);
                         countKnowQuestLoc[d.turn - 1]++;
                         players[d.turn - 1].money -= 250;
-                        scoreboard.Money[d.turn - 1].setText(players[d.turn - 1].getName() + " money: " + players[d.turn - 1].money);
+                        scoreboard.Money[d.turn - 1].setText( " money: " + players[d.turn - 1].money);
                         successfulPurchase();
                         correspondStats();
                     }
@@ -821,7 +821,7 @@ public class Game extends Sound{
                             }
                         }
                         if (count == 9 - questNum) {
-                            marketFrame.errorInfo.setText("You do know all of quest locations");
+                            marketFrame.errorInfo.setText("You know all of quest locations");
                             control = false;
                         }
                     }
