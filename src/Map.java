@@ -3,7 +3,14 @@ import java.awt.*;
 import java.util.Random;
 
 public class Map extends JPanel {
-    //1==loot
+    /*
+    * Numbers in map:
+    * 0:empty
+    * 1:loot
+    * 2:market
+    * 3:trap
+    * 4:castle
+    * 11-18: Treasures*/
     int[][] map = new int[10][10];
     private static int LootDrawCounter=0;
     Random random = new Random();
@@ -21,10 +28,10 @@ public class Map extends JPanel {
         boolean[] showTrap = new boolean[2];
         JLabel icon = new JLabel(new ImageIcon("images\\trap.png"));
 
-        Trap(int y, int x) {
-            this.x = y;
-            this.y = x;
-            icon.setBounds(27 + y*(65), 27 + x*(65) , 65, 65);
+        Trap(int x, int y) {
+            this.x = x;
+            this.y = y;
+            icon.setBounds(27 + x*(65), 27 + y*(65) , 65, 65);
             icon.setVisible(false);
             add(icon);
         }
@@ -62,7 +69,7 @@ public class Map extends JPanel {
         int[] quadron = new int[4];
         int x, y, q;
         Random rng = new Random();
-        for(int i =0; i < 8; i++) {
+        for(int i = 0; i < 8; i++) {
             do {
                 x = rng.nextInt(8) + 1;
                 y = rng.nextInt(8) + 1;
@@ -73,9 +80,9 @@ public class Map extends JPanel {
             setupTreasureLabel(x, y, i);
         }
     }
-    public void toggleQuestLoc(Player p, boolean nextTurn) {
+    public void toggleQuestLoc(Player p, boolean isNextTurn) {
         for (int i = 0; i < p.knowQuestsLoc.length; i++) {
-            if (treasureLoc[i].isVisible() && nextTurn) {
+            if (treasureLoc[i].isVisible() && isNextTurn) {
                 treasureLoc[i].setVisible(false);
             }
             if (unknownQuest[i].isVisible()) {
