@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
         final int PANEL_HEIGHT = f.gameWindow.getHeight();
         Image swordRight , swordLeft;
         Timer timer;
-        int xVelocity = 1 , yVelocity = 1 , xLeft = 250 , xRight = 350 , y = 50;
+        int xVelocity = 1 , xLeft = 250 , xRight = 350 , y = 50;
         FightAnimation(){
             this.setPreferredSize(new Dimension(PANEL_WIDTH,PANEL_HEIGHT));
             this.setBounds(0,0,1300,800);

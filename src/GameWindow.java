@@ -46,7 +46,7 @@ public class GameWindow{
         JOptionPane.showMessageDialog(null, target,
                 "Hit a Trap!", JOptionPane.ERROR_MESSAGE);
     }
-    GameWindow() {
+    private GameWindow() {
         gameWindow=new JFrame();
         error=new JLabel("Roll the dice");
         playerTurn=new JLabel();
@@ -107,7 +107,7 @@ public class GameWindow{
         strength = new JLabel(new ImageIcon("images\\sword.png"));
         strength.setBounds(938, 28, 36, 36);
         jl.add(strength, JLayeredPane.MODAL_LAYER);
-        strengthCount = new JLabel("1234");
+        strengthCount = new JLabel("0");
         strengthCount.setBounds(881, 29, 60, 30);
         strengthCount.setHorizontalAlignment(SwingConstants.RIGHT);
         strengthCount.setFont(new Font("Gill Sans MT Condensed", Font.BOLD, 25));

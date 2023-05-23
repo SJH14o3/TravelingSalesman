@@ -19,7 +19,7 @@ public class frame{
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             throw new RuntimeException(e);
         }
-        JLabel l = new JLabel(new ImageIcon("images\\menu.jpg"));
+        JLabel l = new JLabel(new ImageIcon("images\\menu.jpg")); //background
         l.setBounds(0,0,1300,800);
         JButton newGame = new JButton(new ImageIcon("images\\newGame.png"));
         newGame.setBounds(577,450,130,75);
