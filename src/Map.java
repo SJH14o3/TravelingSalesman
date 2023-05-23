@@ -132,14 +132,10 @@ public class Map extends JPanel {
     }
     public void showTraps(int turn) {
         hideTraps();
-        boolean active = false;
         for (int i = 0; i < traps.length; i++) {
             if (traps[i].showTrap[turn]) {
                 traps[i].icon.setVisible(true);
-                active = true;
             }
-        }
-        if (active) {
         }
     }
     public void hideTraps() {

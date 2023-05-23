@@ -126,6 +126,7 @@ public class frame{
                     "(row) (column) example: 5 2. careful that you can only enter a quest item that is wanted by castle and you have discover its location.<br>" +
                     "entering invalid input will give player another chance to enter location but entering a wrong location will end a player turn.<br>" +
                     "also entering the quest location correctly will finish the player round and reward them with a lot of money!<br>" +
+                    "in the game row and column numbers are visible to help submitting quest locations<br>" +
                     "there are walls in the map. black horizontal or vertical lines between two houses. you cannot pass through them and you have to choose another path.<br>" +
                     "there are traps in the map. they are hidden but when you hit them they will be visible to you in the next rounds.<br>" +
                     "when player hit a trap they will lose 10% of either their money or power. if a player have low amount of money and power they will die when they hit a trap<br>" +
